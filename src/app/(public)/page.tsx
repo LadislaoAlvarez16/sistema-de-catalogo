@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase/client";
-import ProductCard from "@/components/ProductCard";
 import type { Product } from "@/types/product";
+import ProductGrid from "@/components/catalog/ProductGrid";
+
 
 export default async function PublicPage() {
     const { data: products, error } = await supabase
@@ -10,7 +11,7 @@ export default async function PublicPage() {
       name,
       description,
       price,
-      category_id,
+      category,
       image_url,
       active,
       created_at
@@ -31,14 +32,7 @@ export default async function PublicPage() {
     return (
         <main style={{ padding: 24 }}>
             <h1>Productos</h1>
-
-            {products.length === 0 && <p>No hay productos</p>}
-
-            <ul>
-                {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                ))}
-            </ul>
+            <ProductGrid products={products} />
         </main>
     );
 }

@@ -13,7 +13,7 @@ export default function ProductCard({ product }: Props) {
 
             <strong>${product.price}</strong>
 
-            <p>Categoría: {product.category_id}</p>
+            <p>Categoría: {product.category}</p>
         </li>
     );
 }
