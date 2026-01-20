@@ -1,4 +1,9 @@
 import type { Product } from "@/types/product";
+import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
+import { canShowPrices } from "@/lib/plan/plan.helpers";
+
+const { plan } = getCatalogConfig();
+const showPrice = canShowPrices(plan);
 
 type Props = {
     product: Product;
@@ -11,7 +16,10 @@ export default function ProductCard({ product }: Props) {
 
             {product.description && <p>{product.description}</p>}
 
-            <strong>${product.price}</strong>
+            {showPrice && product.price !== null && (
+                <strong>${product.price}</strong>
+
+            )}
 
             <p>Categoría: {product.category}</p>
         </li>
