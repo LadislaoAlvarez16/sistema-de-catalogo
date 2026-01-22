@@ -4,19 +4,28 @@ import { canShowPrices } from "@/lib/plan/plan.helpers";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import Image from "next/image";
 
-
-const { plan } = getCatalogConfig();
-const showPrice = canShowPrices(plan);
-
 type Props = {
     product: Product;
 };
 
 export default function ProductCard({ product }: Props) {
+    const { plan } = getCatalogConfig();
+    const showPrice = canShowPrices(plan);
+
     const imageSrc = product.image_url || "/placeholder.png";
 
     return (
-        <li style={{ marginBottom: 24 }}>
+        <li
+            style={{
+                border: "1px solid #222",
+                borderRadius: 12,
+                padding: 16,
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                marginBottom: 24,
+            }}
+        >
             <Image
                 src={imageSrc}
                 alt={product.name}

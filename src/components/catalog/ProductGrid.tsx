@@ -11,10 +11,19 @@ export default function ProductGrid({ products }: Props) {
     }
 
     return (
-        <ul>
+        <ul
+            style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+                gap: 24,
+                padding: 0,
+                listStyle: "none",
+            }}
+        >
             {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
             ))}
         </ul>
     );
+
 }
