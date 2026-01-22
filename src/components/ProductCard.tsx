@@ -2,6 +2,7 @@ import type { Product } from "@/types/product";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import { canShowPrices } from "@/lib/plan/plan.helpers";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import Image from "next/image";
 
 
 const { plan } = getCatalogConfig();
@@ -12,8 +13,18 @@ type Props = {
 };
 
 export default function ProductCard({ product }: Props) {
+    const imageSrc = product.image_url || "/placeholder.png";
+
     return (
-        <li style={{ marginBottom: 16 }}>
+        <li style={{ marginBottom: 24 }}>
+            <Image
+                src={imageSrc}
+                alt={product.name}
+                width={300}
+                height={300}
+                style={{ objectFit: "cover", borderRadius: 8 }}
+            />
+
             <h2>{product.name}</h2>
 
             {product.description && <p>{product.description}</p>}
