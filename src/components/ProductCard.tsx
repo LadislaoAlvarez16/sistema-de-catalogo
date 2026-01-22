@@ -1,6 +1,8 @@
 import type { Product } from "@/types/product";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import { canShowPrices } from "@/lib/plan/plan.helpers";
+import WhatsAppButton from "@/components/ui/WhatsAppButton";
+
 
 const { plan } = getCatalogConfig();
 const showPrice = canShowPrices(plan);
@@ -22,6 +24,10 @@ export default function ProductCard({ product }: Props) {
             )}
 
             <p>Categoría: {product.category}</p>
+
+            <WhatsAppButton
+                message={`Hola, estoy interesado en el producto: ${product.name}`}
+            />
         </li>
     );
 }
