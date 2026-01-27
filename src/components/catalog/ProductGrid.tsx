@@ -14,7 +14,7 @@ export default function ProductGrid({ products }: Props) {
         <ul
             style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
                 gap: 24,
                 padding: 0,
                 listStyle: "none",
@@ -25,5 +25,4 @@ export default function ProductGrid({ products }: Props) {
             ))}
         </ul>
     );
-
 }
