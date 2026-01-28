@@ -3,6 +3,7 @@ import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import { canShowPrices } from "@/lib/plan/plan.helpers";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import Image from "next/image";
+import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
 
 type Props = {
     product: Product;
@@ -12,7 +13,7 @@ export default function ProductCard({ product }: Props) {
     const { plan } = getCatalogConfig();
     const showPrice = canShowPrices(plan);
 
-    const imageSrc = product.image_url || "/placeholder.png";
+    const imageSrc = getProductImageUrl(product.image_url);
 
     return (
         <li
