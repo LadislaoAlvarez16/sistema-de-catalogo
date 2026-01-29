@@ -16,23 +16,14 @@ export default function ProductCard({ product }: Props) {
     const imageSrc = getProductImageUrl(product.image_url);
 
     return (
-        <li
-            style={{
-                border: "1px solid #222",
-                borderRadius: 12,
-                padding: 16,
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-                marginBottom: 24,
-            }}
-        >
+        <li className="flex flex-col gap-3 rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-zinc-700 transition">
+
             <Image
                 src={imageSrc}
                 alt={product.name}
                 width={300}
                 height={300}
-                style={{ objectFit: "cover", borderRadius: 8 }}
+                className="w-full h-56 object-cover rounded-lg"
             />
 
             <h2>{product.name}</h2>
