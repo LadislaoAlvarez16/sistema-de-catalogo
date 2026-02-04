@@ -7,17 +7,19 @@ import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
 
 type Props = {
     product: Product;
+    onClick?: () => void;
 };
 
-export default function ProductCard({ product }: Props) {
+export default function ProductCard({ product, onClick }: Props) {
     const { plan } = getCatalogConfig();
     const showPrice = canShowPrices(plan);
-
     const imageSrc = getProductImageUrl(product.image_url);
 
     return (
-        <li className="flex flex-col gap-3 rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-zinc-700 transition">
-
+        <li
+            onClick={onClick}
+            className="cursor-pointer flex flex-col gap-3 rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-zinc-700 transition"
+        >
             <Image
                 src={imageSrc}
                 alt={product.name}
@@ -32,7 +34,6 @@ export default function ProductCard({ product }: Props) {
 
             {showPrice && product.price !== null && (
                 <strong>${product.price}</strong>
-
             )}
 
             <p>Categoría: {product.category}</p>
