@@ -13,8 +13,13 @@ export default function ProductModal({ product, onClose }: Props) {
     const imageSrc = getProductImageUrl(product.image_url);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-            <div className="relative w-full max-w-lg rounded-xl bg-zinc-950 p-6 border border-zinc-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+            onClick={onClose}
+        >
+
+            <div className="relative w-full max-w-lg rounded-xl bg-zinc-950 p-6 border border-zinc-800"
+                onClick={(e) => e.stopPropagation()}
+            >
 
                 {/* Close */}
                 <button
