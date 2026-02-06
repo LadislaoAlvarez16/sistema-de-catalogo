@@ -1,8 +1,10 @@
 "use client";
+
 import { useState } from "react";
 import type { Product } from "@/types/product";
 import ProductCard from "@/components/ProductCard";
 import ProductModal from "@/components/catalog/ProductModal";
+import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 
 type Props = {
     products: Product[];
@@ -11,9 +13,19 @@ type Props = {
 export default function ProductGrid({ products }: Props) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
+    const { plan } = getCatalogConfig();
+
     if (products.length === 0) {
         return <p>No hay productos</p>;
     }
+
+    const handleProductClick = (product: Product) => {
+        if (plan === "basic") {
+            return;
+        }
+
+        setSelectedProduct(product);
+    };
 
     return (
         <>
@@ -22,7 +34,7 @@ export default function ProductGrid({ products }: Props) {
                     <ProductCard
                         key={product.id}
                         product={product}
-                        onClick={() => setSelectedProduct(product)}
+                        onClick={() => handleProductClick(product)}
                     />
                 ))}
             </ul>
