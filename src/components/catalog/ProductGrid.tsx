@@ -5,6 +5,8 @@ import type { Product } from "@/types/product";
 import ProductCard from "@/components/ProductCard";
 import ProductModal from "@/components/catalog/ProductModal";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
+import { canUseProductModal } from "@/lib/plan/plan.helpers";
+
 
 type Props = {
     products: Product[];
@@ -12,8 +14,9 @@ type Props = {
 
 export default function ProductGrid({ products }: Props) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
     const { plan } = getCatalogConfig();
+    const canOpenModal = canUseProductModal(plan);
+
 
     if (products.length === 0) {
         return <p>No hay productos</p>;
@@ -34,12 +37,16 @@ export default function ProductGrid({ products }: Props) {
                     <ProductCard
                         key={product.id}
                         product={product}
-                        onClick={() => handleProductClick(product)}
+                        onClick={
+                            canOpenModal
+                                ? () => handleProductClick(product)
+                                : undefined
+                        }
                     />
                 ))}
             </ul>
 
-            {selectedProduct && (
+            {selectedProduct && selectedProduct && (
                 <ProductModal
                     product={selectedProduct}
                     onClose={() => setSelectedProduct(null)}
