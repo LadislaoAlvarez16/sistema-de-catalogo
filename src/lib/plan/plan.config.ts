@@ -19,7 +19,7 @@ export const PLAN_RULES = {
     },
     pro: {
         showPrices: true,
-        whatsappCTA: false,
+        whatsappCTA: true,
         productModal: true,
         productPage: true,
         filters: true,
