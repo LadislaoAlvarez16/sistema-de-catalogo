@@ -1,7 +1,7 @@
 import type { Plan } from "@/lib/plan/plan.config";
 
 export const CATALOG_CONFIG = {
-    plan: "medium" as Plan,
+    plan: "pro" as Plan,
     whatsapp: "5491112345678",
     whatsappMessage: "Hola, quiero consultar por este producto",
 };
