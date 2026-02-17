@@ -7,7 +7,8 @@ export const PLAN_RULES = {
         productModal: false,
         productPage: false,
         filters: false,
-        productLimit: 10,
+        productLimit: 30,
+        categoryLimit: 5,
     },
     medium: {
         showPrices: false,
@@ -15,7 +16,8 @@ export const PLAN_RULES = {
         productModal: true,
         productPage: false,
         filters: false,
-        productLimit: 20,
+        productLimit: 100,
+        categoryLimit: 10,
     },
     pro: {
         showPrices: true,
@@ -24,5 +26,6 @@ export const PLAN_RULES = {
         productPage: true,
         filters: true,
         productLimit: Infinity,
+        categoryLimit: Infinity,
     },
 } as const;
