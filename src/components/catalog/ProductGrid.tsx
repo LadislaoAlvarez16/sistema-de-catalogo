@@ -35,6 +35,12 @@ export default function ProductGrid({ products }: Props) {
         return <p>No hay productos</p>;
     }
 
+    const limitedProducts =
+        rules.productLimit === Infinity
+            ? filteredProducts
+            : filteredProducts.slice(0, rules.productLimit);
+
+
     const handleProductClick = (product: Product) => {
         if (!canOpenModal) return;
         setSelectedProduct(product);
@@ -47,8 +53,8 @@ export default function ProductGrid({ products }: Props) {
                     <button
                         onClick={() => setSelectedCategory("all")}
                         className={`px-4 py-2 rounded-lg border ${selectedCategory === "all"
-                                ? "bg-white text-black"
-                                : "border-zinc-700 text-zinc-400"
+                            ? "bg-white text-black"
+                            : "border-zinc-700 text-zinc-400"
                             }`}
                     >
                         Todas
@@ -59,8 +65,8 @@ export default function ProductGrid({ products }: Props) {
                             key={category}
                             onClick={() => setSelectedCategory(category as string)}
                             className={`px-4 py-2 rounded-lg border ${selectedCategory === category
-                                    ? "bg-white text-black"
-                                    : "border-zinc-700 text-zinc-400"
+                                ? "bg-white text-black"
+                                : "border-zinc-700 text-zinc-400"
                                 }`}
                         >
                             {category}
@@ -70,7 +76,7 @@ export default function ProductGrid({ products }: Props) {
             )}
 
             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredProducts.map((product) => (
+                {limitedProducts.map((product) => (
                     <ProductCard
                         key={product.id}
                         product={product}
