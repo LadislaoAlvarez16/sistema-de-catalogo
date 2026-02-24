@@ -1,3 +1,4 @@
+"use client";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 
 type Props = {

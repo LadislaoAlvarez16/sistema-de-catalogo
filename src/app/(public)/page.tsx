@@ -8,6 +8,7 @@ export default async function PublicPage() {
         .from("products")
         .select(`
       id,
+      slug,
       name,
       description,
       price,
