@@ -7,4 +7,5 @@ export type Product = {
     category: string;
     image_url: string | null;
     active: boolean;
+    account_id: string;
 };
