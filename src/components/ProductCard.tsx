@@ -1,17 +1,17 @@
 import type { Product } from "@/types/product";
-import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import { canShowPrices } from "@/lib/plan/plan.helpers";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import Image from "next/image";
 import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
+import type { Plan } from "@/lib/plan/plan.config";
 
 type Props = {
     product: Product;
+    plan: Plan;
     onClick?: () => void;
 };
 
-export default function ProductCard({ product, onClick }: Props) {
-    const { plan } = getCatalogConfig();
+export default function ProductCard({ product, plan, onClick }: Props) {
     const showPrice = canShowPrices(plan);
     const imageSrc = getProductImageUrl(product.image_url);
 
