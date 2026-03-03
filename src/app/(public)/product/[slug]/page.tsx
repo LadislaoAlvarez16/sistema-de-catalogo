@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase/client";
 import type { Product } from "@/types/product";
 
 type ProductPageProps = {
-    params: Promise<{ slug: string }>;
+    params: { slug: string };
 };
 
 async function getActiveProductBySlug(slug: string): Promise<Product | null> {
@@ -25,7 +25,8 @@ async function getActiveProductBySlug(slug: string): Promise<Product | null> {
             price,
             category,
             image_url,
-            active
+            active,
+            account_id
         `
         )
         .eq("slug", slug)
@@ -40,10 +41,12 @@ async function getActiveProductBySlug(slug: string): Promise<Product | null> {
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-    const { plan } = getCatalogConfig();
+    const { slug } = params;
+    const product = await getActiveProductBySlug(slug);
 
-    if (!canUseProductPage(plan)) {
+    if (!product) {
         return {
+            title: "Producto no encontrado",
             robots: {
                 index: false,
                 follow: false,
@@ -51,12 +54,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
         };
     }
 
-    const { slug } = await params;
-    const product = await getActiveProductBySlug(slug);
-
-    if (!product) {
+    const config = await getCatalogConfig(product.account_id);
+    if (!config || !canUseProductPage(config.plan)) {
         return {
-            title: "Producto no encontrado",
             robots: {
                 index: false,
                 follow: false,
@@ -91,20 +91,19 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    const { plan } = getCatalogConfig();
-
-    if (!canUseProductPage(plan)) {
-        notFound();
-    }
-
-    const { slug } = await params;
+    const { slug } = params;
     const product = await getActiveProductBySlug(slug);
 
     if (!product) {
         notFound();
     }
 
-    const showPrice = canShowPrices(plan);
+    const config = await getCatalogConfig(product.account_id);
+    if (!config || !canUseProductPage(config.plan)) {
+        notFound();
+    }
+
+    const showPrice = canShowPrices(config.plan);
     const imageSrc = getProductImageUrl(product.image_url);
 
     return (

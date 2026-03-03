@@ -4,24 +4,23 @@ import { useState } from "react";
 import type { Product } from "@/types/product";
 import ProductCard from "@/components/ProductCard";
 import ProductModal from "@/components/catalog/ProductModal";
-import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
+import type { Plan } from "@/lib/plan/plan.config";
 import { canUseProductModal, getPlanRules } from "@/lib/plan/plan.helpers";
 
 type Props = {
     products: Product[];
+    plan: Plan;
 };
 
 type SortOption = "name-asc" | "name-desc" | "category";
 
-export default function ProductGrid({ products }: Props) {
+export default function ProductGrid({ products, plan }: Props) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<SortOption>("name-asc");
 
-    const { plan } = getCatalogConfig();
     const rules = getPlanRules(plan);
-
     const canOpenModal = canUseProductModal(plan);
     const canUseSearch = plan !== "basic";
     const canUseSort = plan !== "basic";
@@ -130,8 +129,8 @@ export default function ProductGrid({ products }: Props) {
                     <button
                         onClick={() => setSelectedCategory("all")}
                         className={`px-4 py-2 rounded-lg border ${selectedCategory === "all"
-                                ? "bg-white text-black"
-                                : "border-zinc-700 text-zinc-400"
+                            ? "bg-white text-black"
+                            : "border-zinc-700 text-zinc-400"
                             }`}
                     >
                         Todas
@@ -144,8 +143,8 @@ export default function ProductGrid({ products }: Props) {
                                 setSelectedCategory(category as string)
                             }
                             className={`px-4 py-2 rounded-lg border ${selectedCategory === category
-                                    ? "bg-white text-black"
-                                    : "border-zinc-700 text-zinc-400"
+                                ? "bg-white text-black"
+                                : "border-zinc-700 text-zinc-400"
                                 }`}
                         >
                             {category}
@@ -159,6 +158,7 @@ export default function ProductGrid({ products }: Props) {
                     <ProductCard
                         key={product.id}
                         product={product}
+                        plan={plan}
                         onClick={
                             canOpenModal
                                 ? () => handleProductClick(product)
