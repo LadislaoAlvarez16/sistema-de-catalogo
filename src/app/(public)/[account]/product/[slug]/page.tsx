@@ -2,22 +2,22 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
-import { appConfig } from "@/lib/config/app.config";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
-import { canShowPrices, canUseProductPage } from "@/lib/plan/plan.helpers";
 import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
-import { supabase } from "@/lib/supabase/client";
 import type { Product } from "@/types/product";
+import { supabase } from "@/lib/supabase/client";
+import { canShowPrices } from "@/lib/plan/plan.helpers";
 
+// Tipado correcto para params como Promise<{ account: string; slug: string }>
 type ProductPageProps = {
-    params: { slug: string };
+    params: Promise<{ account: string; slug: string }>;
 };
 
+// Función auxiliar para obtener el producto activo por slug
 async function getActiveProductBySlug(slug: string): Promise<Product | null> {
     const { data, error } = await supabase
         .from("products")
-        .select(
-            `
+        .select(`
             id,
             slug,
             name,
@@ -27,23 +27,18 @@ async function getActiveProductBySlug(slug: string): Promise<Product | null> {
             image_url,
             active,
             account_id
-        `
-        )
+        `)
         .eq("slug", slug)
         .eq("active", true)
         .maybeSingle<Product>();
-
-    if (error) {
-        return null;
-    }
-
+    if (error) return null;
     return data;
 }
 
+// Usar await params antes de desestructurar
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-    const { slug } = params;
+    const { slug } = await params;
     const product = await getActiveProductBySlug(slug);
-
     if (!product) {
         return {
             title: "Producto no encontrado",
@@ -53,19 +48,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
             },
         };
     }
-
     const config = await getCatalogConfig(product.account_id);
-    if (!config || !canUseProductPage(config.plan)) {
-        return {
-            robots: {
-                index: false,
-                follow: false,
-            },
-        };
-    }
-
-    const title = `${product.name} | ${appConfig.seo.title}`;
-    const description = product.description ?? appConfig.seo.description;
+    const title = product.name;
+    const description = product.description ?? config?.name ?? "";
     const imageUrl = getProductImageUrl(product.image_url);
 
     return {
@@ -90,26 +75,22 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     };
 }
 
+// Usar await params antes de desestructurar
 export default async function ProductPage({ params }: ProductPageProps) {
-    const { slug } = params;
+    const { slug } = await params;
     const product = await getActiveProductBySlug(slug);
-
     if (!product) {
         notFound();
     }
-
     const config = await getCatalogConfig(product.account_id);
-    if (!config || !canUseProductPage(config.plan)) {
+    if (!config) {
         notFound();
     }
-
-    const showPrice = canShowPrices(config.plan);
-    const imageSrc = getProductImageUrl(product.image_url);
 
     return (
         <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6 p-6">
             <Image
-                src={imageSrc}
+                src={getProductImageUrl(product.image_url)}
                 alt={product.name}
                 width={1200}
                 height={1200}
@@ -123,7 +104,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {product.description && (
                     <p className="text-zinc-300 leading-relaxed">{product.description}</p>
                 )}
-                {showPrice && product.price !== null && (
+                {canShowPrices(config.plan) && product.price !== null && (
                     <p className="text-2xl font-bold">${product.price}</p>
                 )}
             </div>
