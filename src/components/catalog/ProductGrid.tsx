@@ -167,10 +167,10 @@ export default function ProductGrid({ products, plan }: Props) {
                     />
                 ))}
             </ul>
-
             {selectedProduct && (
                 <ProductModal
                     product={selectedProduct}
+                    plan={plan}
                     onClose={() => setSelectedProduct(null)}
                 />
             )}
