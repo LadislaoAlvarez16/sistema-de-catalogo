@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 
 type Product = {
   id: string
@@ -39,7 +40,15 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4">
-      <h1 className="text-2xl font-bold mb-4">¡Bienvenido, {user.email}!</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
+        <h1 className="text-2xl font-bold">¡Bienvenido, {user.email}!</h1>
+        <Link
+          href="/admin/dashboard/nuevo"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
+        >
+          Agregar producto
+        </Link>
+      </div>
 
       {products.length > 0 ? (
         <div className="overflow-x-auto rounded shadow bg-white">
@@ -61,12 +70,12 @@ export default async function DashboardPage() {
                     {product.price ? `$${product.price}` : '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <button
-                      className="inline-flex items-center px-3 py-1.5 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition"
-                      type="button"
+                    <Link
+                      href={`/admin/dashboard/editar/${product.id}`}
+                      className="text-blue-500 hover:text-blue-400 border border-blue-600 hover:border-blue-400 px-4 py-1 rounded transition"
                     >
                       Editar
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               ))}

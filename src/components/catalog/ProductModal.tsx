@@ -36,13 +36,19 @@ export default function ProductModal({ product, plan, onClose }: Props) {
                 >
                     ✕
                 </button>
-                <Image
-                    src={imageSrc}
-                    alt={product.name}
-                    width={500}
-                    height={500}
-                    className="w-full h-64 object-cover rounded-lg mb-4"
-                />
+                {imageSrc ? (
+                    <Image
+                        src={imageSrc}
+                        alt={product.name}
+                        width={500}
+                        height={500}
+                        className="w-full h-64 object-cover rounded-lg mb-4"
+                    />
+                ) : (
+                    <div className="w-full h-75 bg-gray-200 flex items-center justify-center rounded mb-4 text-gray-500">
+                        Sin imagen
+                    </div>
+                )}
                 <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
                 {product.description && (
                     <p className="text-zinc-400 mb-3">{product.description}</p>
