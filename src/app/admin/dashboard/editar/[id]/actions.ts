@@ -21,8 +21,21 @@ export async function updateProductAction(productId: string, formData: FormData)
 
     let image_url = currentImageUrl
 
-    // Si subió una foto nueva, la guardamos y actualizamos la URL
+    // Si subió una foto nueva, eliminamos la anterior (si corresponde), guardamos la nueva y actualizamos la URL
     if (image && image.size > 0) {
+        // Eliminar imagen anterior si la URL es válida de Supabase
+        if (
+            currentImageUrl &&
+            typeof currentImageUrl === 'string' &&
+            currentImageUrl.includes('rvmxxlwnrlbbfihhblmy.supabase.co/storage/v1/object/public/product-images/')
+        ) {
+            const parts = currentImageUrl.split('/')
+            const oldFileName = parts[parts.length - 1]
+            if (oldFileName) {
+                await supabase.storage.from('product-images').remove([oldFileName])
+            }
+        }
+
         const fileExt = image.name.split('.').pop()
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
 
