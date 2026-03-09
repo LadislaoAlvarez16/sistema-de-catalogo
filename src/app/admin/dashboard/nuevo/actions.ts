@@ -5,23 +5,26 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 export async function createProductAction(prevState: unknown, formData: FormData) {
-    // 1. Extraer los datos del formulario
     const name = formData.get('name') as string
-    const category = formData.get('category') as string
+    const category_id = formData.get('category_id') as string | null
+    const category_name = formData.get('category_name') as string | null
     const price = parseFloat(formData.get('price') as string)
     const description = formData.get('description') as string | null
     const image = formData.get('image') as File | null
 
-    if (!name || !category || isNaN(price)) {
+    // Si no hay categoría, guardar null en ambas
+    const categoryIdToSave = category_id && category_id !== "" ? category_id : null
+    const categoryNameToSave = category_name && category_name !== "" ? category_name : null
+
+    if (!name || isNaN(price)) {
         return { error: 'Faltan campos obligatorios' }
     }
 
-    // 2. Generar slug automático (ej: "Llave Yale" -> "llave-yale")
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
 
     const supabase = await createClient()
 
-    // 3. Obtener el usuario y su cuenta
+    // Obtener el usuario y su cuenta
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'No autorizado' }
 
@@ -35,14 +38,12 @@ export async function createProductAction(prevState: unknown, formData: FormData
 
     let image_url = null
 
-    // 4. Subir la imagen a Supabase Storage (si el usuario eligió una)
     if (image && image.size > 0) {
-        // Inventar un nombre único para que no se sobreescriban fotos con el mismo nombre
         const fileExt = image.name.split('.').pop()
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
 
         const { error: uploadError } = await supabase.storage
-            .from('product-images') // Usamos tu bucket existente
+            .from('product-images')
             .upload(fileName, image)
 
         if (uploadError) {
@@ -50,7 +51,6 @@ export async function createProductAction(prevState: unknown, formData: FormData
             return { error: 'No se pudo subir la imagen' }
         }
 
-        // Obtener el link público para guardarlo en la base de datos
         const { data: publicUrlData } = supabase.storage
             .from('product-images')
             .getPublicUrl(fileName)
@@ -58,13 +58,14 @@ export async function createProductAction(prevState: unknown, formData: FormData
         image_url = publicUrlData.publicUrl
     }
 
-    // 5. Guardar todo en la tabla products
+    // Guardar en la tabla products
     const { error: insertError } = await supabase
         .from('products')
         .insert({
             name,
             slug,
-            category,
+            category_id: categoryIdToSave,
+            category: categoryNameToSave,
             price,
             description: description || null,
             image_url,
@@ -76,7 +77,6 @@ export async function createProductAction(prevState: unknown, formData: FormData
         return { error: insertError.message }
     }
 
-    // 6. Refrescar el panel y volver
     revalidatePath('/admin/dashboard')
     redirect('/admin/dashboard')
 }
