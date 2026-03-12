@@ -40,14 +40,24 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <h1 className="text-2xl font-bold">¡Bienvenido, {user.email}!</h1>
-        <Link
-          href="/admin/dashboard/nuevo"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
-        >
-          Agregar producto
-        </Link>
+
+        {/* Agrupamos los botones en este div */}
+        <div className="flex gap-3">
+          <Link
+            href="/admin/dashboard/categorias"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition"
+          >
+            Categorías
+          </Link>
+          <Link
+            href="/admin/dashboard/nuevo"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
+          >
+            Agregar producto
+          </Link>
+        </div>
       </div>
 
       {products.length > 0 ? (
