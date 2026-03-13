@@ -7,14 +7,22 @@ import ProductModal from "@/components/catalog/ProductModal";
 import type { Plan } from "@/lib/plan/plan.config";
 import { canUseProductModal, getPlanRules } from "@/lib/plan/plan.helpers";
 
+// 🔹 Agregamos el tipo para las categorías que vienen de la base de datos
+type Category = {
+    id: string;
+    name: string;
+    slug: string;
+};
+
 type Props = {
     products: Product[];
     plan: Plan;
+    categories: Category[]; // 🔹 Nueva prop
 };
 
 type SortOption = "name-asc" | "name-desc" | "category";
 
-export default function ProductGrid({ products, plan }: Props) {
+export default function ProductGrid({ products, plan, categories }: Props) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [searchQuery, setSearchQuery] = useState("");
@@ -25,26 +33,23 @@ export default function ProductGrid({ products, plan }: Props) {
     const canUseSearch = plan !== "basic";
     const canUseSort = plan !== "basic";
 
-    // 🔹 Obtener categorías únicas
-    const categories = Array.from(
-        new Set(products.map((p) => p.category).filter(Boolean))
-    );
-
-    // 🔹 Limitar categorías según plan
+    // 🔹 Limitar categorías según el plan usando los datos reales de la BD
     const allowedCategories =
         rules.categoryLimit === Infinity
             ? categories
             : categories.slice(0, rules.categoryLimit);
+
+    const allowedCategoryNames = allowedCategories.map(c => c.name);
 
     // 🔹 Limitar productos a categorías permitidas
     const productsWithinCategoryLimit =
         rules.categoryLimit === Infinity
             ? products
             : products.filter((p) =>
-                allowedCategories.includes(p.category as string)
+                allowedCategoryNames.includes(p.category as string)
             );
 
-    // 🔹 Filtro por categoría
+    // 🔹 Filtro por categoría (usando el nombre para mantener compatibilidad)
     const categoryFiltered =
         selectedCategory === "all"
             ? productsWithinCategoryLimit
@@ -77,7 +82,7 @@ export default function ProductGrid({ products, plan }: Props) {
     });
 
     if (products.length === 0) {
-        return <p>No hay productos</p>;
+        return <p className="text-zinc-400">No hay productos para mostrar.</p>;
     }
 
     // 🔹 Aplicar límite final
@@ -123,14 +128,14 @@ export default function ProductGrid({ products, plan }: Props) {
                 </div>
             )}
 
-            {/* 🔘 Filtros por categoría */}
+            {/* 🔘 Filtros por categoría dinámicos */}
             {rules.filters && (
                 <div className="mb-6 flex gap-3 flex-wrap">
                     <button
                         onClick={() => setSelectedCategory("all")}
-                        className={`px-4 py-2 rounded-lg border ${selectedCategory === "all"
-                            ? "bg-white text-black"
-                            : "border-zinc-700 text-zinc-400"
+                        className={`px-4 py-2 rounded-lg border transition ${selectedCategory === "all"
+                            ? "bg-white text-black font-medium"
+                            : "border-zinc-700 text-zinc-400 hover:border-zinc-500"
                             }`}
                     >
                         Todas
@@ -138,16 +143,14 @@ export default function ProductGrid({ products, plan }: Props) {
 
                     {allowedCategories.map((category) => (
                         <button
-                            key={category}
-                            onClick={() =>
-                                setSelectedCategory(category as string)
-                            }
-                            className={`px-4 py-2 rounded-lg border ${selectedCategory === category
-                                ? "bg-white text-black"
-                                : "border-zinc-700 text-zinc-400"
+                            key={category.id}
+                            onClick={() => setSelectedCategory(category.name)}
+                            className={`px-4 py-2 rounded-lg border transition ${selectedCategory === category.name
+                                ? "bg-white text-black font-medium"
+                                : "border-zinc-700 text-zinc-400 hover:border-zinc-500"
                                 }`}
                         >
-                            {category}
+                            {category.name}
                         </button>
                     ))}
                 </div>

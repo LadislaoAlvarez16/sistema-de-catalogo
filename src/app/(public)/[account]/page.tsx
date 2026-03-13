@@ -3,14 +3,12 @@ import type { Product } from "@/types/product";
 import ProductGrid from "@/components/catalog/ProductGrid";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import { notFound } from "next/navigation";
-import type { Plan } from "@/lib/plan/plan.config"; // Asegura el tipo correcto
+import type { Plan } from "@/lib/plan/plan.config";
 
-// Asume que la ruta es /[account]/page.tsx y Next.js pasa params.account
 type PageProps = {
     params: Promise<{ account: string }>;
 };
 
-// Función auxiliar para obtener el ID de la cuenta a partir del slug
 async function getAccountIdBySlug(slug: string): Promise<string | null> {
     const { data, error } = await supabase
         .from("accounts")
@@ -25,20 +23,13 @@ async function getAccountIdBySlug(slug: string): Promise<string | null> {
 export default async function PublicPage({ params }: PageProps) {
     const { account: accountSlug } = await params;
 
-    // 1. Buscar el ID real de la cuenta
     const accountId = await getAccountIdBySlug(accountSlug);
-    if (!accountId) {
-        notFound();
-    }
+    if (!accountId) notFound();
 
-    // 2. Obtener la configuración de la cuenta
     const config = await getCatalogConfig(accountId);
-    if (!config) {
-        notFound();
-    }
+    if (!config) notFound();
 
-    // 3. Cargar productos filtrando por account_id
-    const { data: products, error } = await supabase
+    const { data: products, error: prodError } = await supabase
         .from("products")
         .select(`
             id,
@@ -46,6 +37,7 @@ export default async function PublicPage({ params }: PageProps) {
             name,
             description,
             price,
+            category_id,
             category,
             image_url,
             active,
@@ -56,11 +48,18 @@ export default async function PublicPage({ params }: PageProps) {
         .order("created_at", { ascending: false })
         .returns<Product[]>();
 
-    if (error) {
+    // NUEVO: Traer las categorías de esta cuenta
+    const { data: categories, error: catError } = await supabase
+        .from("categories")
+        .select("id, name, slug")
+        .eq("account_id", accountId)
+        .order("name", { ascending: true });
+
+    if (prodError || catError) {
         return (
             <main style={{ padding: 24 }}>
                 <h1>Error</h1>
-                <pre>{JSON.stringify(error, null, 2)}</pre>
+                <pre>{JSON.stringify(prodError || catError, null, 2)}</pre>
             </main>
         );
     }
@@ -68,7 +67,12 @@ export default async function PublicPage({ params }: PageProps) {
     return (
         <main>
             <h1>Productos</h1>
-            <ProductGrid products={products} plan={config.plan as Plan} />
+            {/* NUEVO: Pasamos las categorías al grid */}
+            <ProductGrid
+                products={products}
+                plan={config.plan as Plan}
+                categories={categories || []}
+            />
         </main>
     );
 }
