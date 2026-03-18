@@ -8,12 +8,10 @@ import type { Product } from "@/types/product";
 import { supabase } from "@/lib/supabase/client";
 import { canShowPrices } from "@/lib/plan/plan.helpers";
 
-// Tipado correcto para params como Promise<{ account: string; slug: string }>
 type ProductPageProps = {
     params: Promise<{ account: string; slug: string }>;
 };
 
-// Función auxiliar para obtener el producto activo por slug
 async function getActiveProductBySlug(slug: string): Promise<Product | null> {
     const { data, error } = await supabase
         .from("products")
@@ -35,7 +33,6 @@ async function getActiveProductBySlug(slug: string): Promise<Product | null> {
     return data;
 }
 
-// Usar await params antes de desestructurar
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
     const { slug } = await params;
     const product = await getActiveProductBySlug(slug);
@@ -75,7 +72,6 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     };
 }
 
-// Usar await params antes de desestructurar
 export default async function ProductPage({ params }: ProductPageProps) {
     const { slug } = await params;
     const product = await getActiveProductBySlug(slug);
@@ -86,6 +82,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
     if (!config) {
         notFound();
     }
+
+    // 🔹 Replicamos la lógica del mensaje dinámico acá también
+    const showPrice = canShowPrices(config.plan);
+    const wpMessage = showPrice && product.price
+        ? `Hola, me interesa el producto: *${product.name}* que está a *$${product.price}*. ¿Tienen stock?`
+        : `Hola, me interesa el producto: *${product.name}*. ¿Me podrían dar más información?`;
 
     return (
         <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6 p-6">
@@ -104,14 +106,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {product.description && (
                     <p className="text-zinc-300 leading-relaxed">{product.description}</p>
                 )}
-                {canShowPrices(config.plan) && product.price !== null && (
+                {showPrice && product.price !== null && (
                     <p className="text-2xl font-bold">${product.price}</p>
                 )}
             </div>
 
             <div>
                 <WhatsAppButton
-                    message={`Hola, estoy interesado en el producto: ${product.name}`}
+                    message={wpMessage}
+                    phoneNumber={config.whatsapp || undefined}
                 />
             </div>
         </main>
