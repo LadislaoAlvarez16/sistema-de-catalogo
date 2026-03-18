@@ -48,7 +48,6 @@ export default async function PublicPage({ params }: PageProps) {
         .order("created_at", { ascending: false })
         .returns<Product[]>();
 
-    // NUEVO: Traer las categorías de esta cuenta
     const { data: categories, error: catError } = await supabase
         .from("categories")
         .select("id, name, slug")
@@ -67,11 +66,11 @@ export default async function PublicPage({ params }: PageProps) {
     return (
         <main>
             <h1>Productos</h1>
-            {/* NUEVO: Pasamos las categorías al grid */}
             <ProductGrid
                 products={products}
                 plan={config.plan as Plan}
                 categories={categories || []}
+                phoneNumber={config.whatsapp || undefined}
             />
         </main>
     );

@@ -8,12 +8,18 @@ import type { Plan } from "@/lib/plan/plan.config";
 type Props = {
     product: Product;
     plan: Plan;
+    phoneNumber?: string; // Lo preparamos para recibir el número
     onClick?: () => void;
 };
 
-export default function ProductCard({ product, plan, onClick }: Props) {
+export default function ProductCard({ product, plan, phoneNumber, onClick }: Props) {
     const showPrice = canShowPrices(plan);
     const imageSrc = getProductImageUrl(product.image_url);
+
+    // Armamos el texto dependiendo de si se muestra el precio o no
+    const wpMessage = showPrice && product.price
+        ? `Hola, me interesa el producto: *${product.name}* que está a *$${product.price}*. ¿Tienen stock?`
+        : `Hola, me interesa el producto: *${product.name}*. ¿Me podrían dar más información?`;
 
     return (
         <li
@@ -30,17 +36,21 @@ export default function ProductCard({ product, plan, onClick }: Props) {
 
             <h2>{product.name}</h2>
 
-            {product.description && <p>{product.description}</p>}
+            {product.description && <p className="text-sm text-zinc-400">{product.description}</p>}
 
             {showPrice && product.price !== null && (
-                <strong>${product.price}</strong>
+                <strong className="text-lg">${product.price}</strong>
             )}
 
-            <p>Categoría: {product.category}</p>
+            <p className="text-xs text-zinc-500">Categoría: {product.category}</p>
 
-            <WhatsAppButton
-                message={`Hola, estoy interesado en el producto: ${product.name}`}
-            />
+            {/* Evitamos que el clic en el botón abra el modal de la tarjeta */}
+            <div onClick={(e) => e.stopPropagation()} className="mt-auto pt-2">
+                <WhatsAppButton
+                    message={wpMessage}
+                    phoneNumber={phoneNumber}
+                />
+            </div>
         </li>
     );
 }

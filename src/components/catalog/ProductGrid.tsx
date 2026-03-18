@@ -7,7 +7,6 @@ import ProductModal from "@/components/catalog/ProductModal";
 import type { Plan } from "@/lib/plan/plan.config";
 import { canUseProductModal, getPlanRules } from "@/lib/plan/plan.helpers";
 
-// 🔹 Agregamos el tipo para las categorías que vienen de la base de datos
 type Category = {
     id: string;
     name: string;
@@ -17,12 +16,13 @@ type Category = {
 type Props = {
     products: Product[];
     plan: Plan;
-    categories: Category[]; // 🔹 Nueva prop
+    categories: Category[];
+    phoneNumber?: string; // 🔹 Recibimos el número acá
 };
 
 type SortOption = "name-asc" | "name-desc" | "category";
 
-export default function ProductGrid({ products, plan, categories }: Props) {
+export default function ProductGrid({ products, plan, categories, phoneNumber }: Props) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [searchQuery, setSearchQuery] = useState("");
@@ -33,7 +33,6 @@ export default function ProductGrid({ products, plan, categories }: Props) {
     const canUseSearch = plan !== "basic";
     const canUseSort = plan !== "basic";
 
-    // 🔹 Limitar categorías según el plan usando los datos reales de la BD
     const allowedCategories =
         rules.categoryLimit === Infinity
             ? categories
@@ -41,7 +40,6 @@ export default function ProductGrid({ products, plan, categories }: Props) {
 
     const allowedCategoryNames = allowedCategories.map(c => c.name);
 
-    // 🔹 Limitar productos a categorías permitidas
     const productsWithinCategoryLimit =
         rules.categoryLimit === Infinity
             ? products
@@ -49,7 +47,6 @@ export default function ProductGrid({ products, plan, categories }: Props) {
                 allowedCategoryNames.includes(p.category as string)
             );
 
-    // 🔹 Filtro por categoría (usando el nombre para mantener compatibilidad)
     const categoryFiltered =
         selectedCategory === "all"
             ? productsWithinCategoryLimit
@@ -57,7 +54,6 @@ export default function ProductGrid({ products, plan, categories }: Props) {
                 (p) => p.category === selectedCategory
             );
 
-    // 🔹 Filtro por búsqueda
     const searchFiltered =
         canUseSearch && searchQuery.trim() !== ""
             ? categoryFiltered.filter((p) =>
@@ -65,7 +61,6 @@ export default function ProductGrid({ products, plan, categories }: Props) {
             )
             : categoryFiltered;
 
-    // 🔹 Ordenamiento
     const sortedProducts = [...searchFiltered].sort((a, b) => {
         if (!canUseSort) return 0;
 
@@ -85,7 +80,6 @@ export default function ProductGrid({ products, plan, categories }: Props) {
         return <p className="text-zinc-400">No hay productos para mostrar.</p>;
     }
 
-    // 🔹 Aplicar límite final
     const limitedProducts =
         rules.productLimit === Infinity
             ? sortedProducts
@@ -98,7 +92,6 @@ export default function ProductGrid({ products, plan, categories }: Props) {
 
     return (
         <>
-            {/* 🔎 Buscador */}
             {canUseSearch && (
                 <div className="mb-4">
                     <input
@@ -111,7 +104,6 @@ export default function ProductGrid({ products, plan, categories }: Props) {
                 </div>
             )}
 
-            {/* 🔃 Ordenamiento */}
             {canUseSort && (
                 <div className="mb-6">
                     <select
@@ -128,7 +120,6 @@ export default function ProductGrid({ products, plan, categories }: Props) {
                 </div>
             )}
 
-            {/* 🔘 Filtros por categoría dinámicos */}
             {rules.filters && (
                 <div className="mb-6 flex gap-3 flex-wrap">
                     <button
@@ -162,6 +153,7 @@ export default function ProductGrid({ products, plan, categories }: Props) {
                         key={product.id}
                         product={product}
                         plan={plan}
+                        phoneNumber={phoneNumber} // 🔹 Se lo pasamos a la tarjeta
                         onClick={
                             canOpenModal
                                 ? () => handleProductClick(product)
