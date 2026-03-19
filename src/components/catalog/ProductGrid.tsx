@@ -17,16 +17,19 @@ type Props = {
     products: Product[];
     plan: Plan;
     categories: Category[];
-    phoneNumber?: string; // 🔹 Recibimos el número acá
+    phoneNumber?: string;
 };
 
 type SortOption = "name-asc" | "name-desc" | "category";
+
+const PRODUCTS_PER_PAGE = 8;
 
 export default function ProductGrid({ products, plan, categories, phoneNumber }: Props) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<SortOption>("name-asc");
+    const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
 
     const rules = getPlanRules(plan);
     const canOpenModal = canUseProductModal(plan);
@@ -63,16 +66,11 @@ export default function ProductGrid({ products, plan, categories, phoneNumber }:
 
     const sortedProducts = [...searchFiltered].sort((a, b) => {
         if (!canUseSort) return 0;
-
         switch (sortBy) {
-            case "name-asc":
-                return a.name.localeCompare(b.name);
-            case "name-desc":
-                return b.name.localeCompare(a.name);
-            case "category":
-                return (a.category || "").localeCompare(b.category || "");
-            default:
-                return 0;
+            case "name-asc": return a.name.localeCompare(b.name);
+            case "name-desc": return b.name.localeCompare(a.name);
+            case "category": return (a.category || "").localeCompare(b.category || "");
+            default: return 0;
         }
     });
 
@@ -84,6 +82,9 @@ export default function ProductGrid({ products, plan, categories, phoneNumber }:
         rules.productLimit === Infinity
             ? sortedProducts
             : sortedProducts.slice(0, rules.productLimit);
+
+    const paginatedProducts = limitedProducts.slice(0, visibleCount);
+    const hasMoreProducts = visibleCount < limitedProducts.length;
 
     const handleProductClick = (product: Product) => {
         if (!canOpenModal) return;
@@ -98,7 +99,10 @@ export default function ProductGrid({ products, plan, categories, phoneNumber }:
                         type="text"
                         placeholder="Buscar producto..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setVisibleCount(PRODUCTS_PER_PAGE); // 🔹 Reset acá
+                        }}
                         className="w-full px-4 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-white placeholder:text-zinc-500 focus:outline-none focus:border-white"
                     />
                 </div>
@@ -108,9 +112,10 @@ export default function ProductGrid({ products, plan, categories, phoneNumber }:
                 <div className="mb-6">
                     <select
                         value={sortBy}
-                        onChange={(e) =>
-                            setSortBy(e.target.value as SortOption)
-                        }
+                        onChange={(e) => {
+                            setSortBy(e.target.value as SortOption);
+                            setVisibleCount(PRODUCTS_PER_PAGE); // 🔹 Reset acá
+                        }}
                         className="px-4 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-white focus:outline-none focus:border-white"
                     >
                         <option value="name-asc">Nombre A–Z</option>
@@ -123,23 +128,22 @@ export default function ProductGrid({ products, plan, categories, phoneNumber }:
             {rules.filters && (
                 <div className="mb-6 flex gap-3 flex-wrap">
                     <button
-                        onClick={() => setSelectedCategory("all")}
-                        className={`px-4 py-2 rounded-lg border transition ${selectedCategory === "all"
-                            ? "bg-white text-black font-medium"
-                            : "border-zinc-700 text-zinc-400 hover:border-zinc-500"
-                            }`}
+                        onClick={() => {
+                            setSelectedCategory("all");
+                            setVisibleCount(PRODUCTS_PER_PAGE); // 🔹 Reset acá
+                        }}
+                        className={`px-4 py-2 rounded-lg border transition ${selectedCategory === "all" ? "bg-white text-black font-medium" : "border-zinc-700 text-zinc-400 hover:border-zinc-500"}`}
                     >
                         Todas
                     </button>
-
                     {allowedCategories.map((category) => (
                         <button
                             key={category.id}
-                            onClick={() => setSelectedCategory(category.name)}
-                            className={`px-4 py-2 rounded-lg border transition ${selectedCategory === category.name
-                                ? "bg-white text-black font-medium"
-                                : "border-zinc-700 text-zinc-400 hover:border-zinc-500"
-                                }`}
+                            onClick={() => {
+                                setSelectedCategory(category.name);
+                                setVisibleCount(PRODUCTS_PER_PAGE); // 🔹 Reset acá
+                            }}
+                            className={`px-4 py-2 rounded-lg border transition ${selectedCategory === category.name ? "bg-white text-black font-medium" : "border-zinc-700 text-zinc-400 hover:border-zinc-500"}`}
                         >
                             {category.name}
                         </button>
@@ -148,20 +152,28 @@ export default function ProductGrid({ products, plan, categories, phoneNumber }:
             )}
 
             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {limitedProducts.map((product) => (
+                {paginatedProducts.map((product) => (
                     <ProductCard
                         key={product.id}
                         product={product}
                         plan={plan}
-                        phoneNumber={phoneNumber} // 🔹 Se lo pasamos a la tarjeta
-                        onClick={
-                            canOpenModal
-                                ? () => handleProductClick(product)
-                                : undefined
-                        }
+                        phoneNumber={phoneNumber}
+                        onClick={canOpenModal ? () => handleProductClick(product) : undefined}
                     />
                 ))}
             </ul>
+
+            {hasMoreProducts && (
+                <div className="mt-8 flex justify-center">
+                    <button
+                        onClick={() => setVisibleCount((prev) => prev + PRODUCTS_PER_PAGE)}
+                        className="px-6 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-white font-medium hover:bg-zinc-800 transition"
+                    >
+                        Cargar más productos
+                    </button>
+                </div>
+            )}
+
             {selectedProduct && (
                 <ProductModal
                     product={selectedProduct}
