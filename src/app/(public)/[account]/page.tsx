@@ -9,22 +9,26 @@ type PageProps = {
     params: Promise<{ account: string }>;
 };
 
-async function getAccountIdBySlug(slug: string): Promise<string | null> {
+//Cambiamos el nombre y le decimos que traiga más campos
+async function getAccountDataBySlug(slug: string) {
     const { data, error } = await supabase
         .from("accounts")
-        .select("id")
+        .select("id, name, description")
         .eq("slug", slug)
-        .maybeSingle<{ id: string }>();
+        .maybeSingle<{ id: string; name: string; description: string | null }>();
 
     if (error || !data) return null;
-    return data.id;
+    return data;
 }
 
 export default async function PublicPage({ params }: PageProps) {
     const { account: accountSlug } = await params;
 
-    const accountId = await getAccountIdBySlug(accountSlug);
-    if (!accountId) notFound();
+    //Usamos la nueva función para obtener toda la info
+    const accountData = await getAccountDataBySlug(accountSlug);
+    if (!accountData) notFound();
+
+    const accountId = accountData.id; // Extraemos el ID para seguir usándolo abajo
 
     const config = await getCatalogConfig(accountId);
     if (!config) notFound();
@@ -64,8 +68,20 @@ export default async function PublicPage({ params }: PageProps) {
     }
 
     return (
-        <main>
-            <h1>Productos</h1>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            {/*Reemplazamos el h1 "Productos" por el encabezado dinámico */}
+            <div className="mb-8 border-b border-zinc-800 pb-6 text-center sm:text-left">
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                    {accountData.name || "Catálogo de Productos"}
+                </h1>
+                {accountData.description && (
+                    <p className="text-zinc-400 text-lg max-w-2xl mt-2">
+                        {accountData.description}
+                    </p>
+                )}
+            </div>
+
             <ProductGrid
                 products={products}
                 plan={config.plan as Plan}

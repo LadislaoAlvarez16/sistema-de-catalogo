@@ -44,7 +44,14 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold">¡Bienvenido, {user.email}!</h1>
 
         {/* Agrupamos los botones en este div */}
+
         <div className="flex gap-3">
+          <Link
+            href="/admin/perfil"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition border border-gray-300"
+          >
+            Perfil
+          </Link>
           <Link
             href="/admin/dashboard/categorias"
             className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition"
@@ -55,7 +62,7 @@ export default async function DashboardPage() {
             href="/admin/dashboard/nuevo"
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
           >
-            Agregar producto
+            + Agregar producto
           </Link>
         </div>
       </div>
