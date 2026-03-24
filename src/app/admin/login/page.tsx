@@ -4,7 +4,7 @@ import { useActionState } from 'react'
 import { loginAction } from './actions'
 
 export default function LoginPage() {
-  const [state, formAction] = useActionState(loginAction, { error: null })
+  const [state, formAction] = useActionState(loginAction, { error: "" })
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
