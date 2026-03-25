@@ -39,6 +39,7 @@ export default async function PerfilPage() {
 
         // Limpiamos el caché y volvemos al dashboard para mostrar que se guardó
         revalidatePath('/admin/perfil')
+        revalidatePath('/', 'layout')
         redirect('/admin/dashboard')
     }
 
