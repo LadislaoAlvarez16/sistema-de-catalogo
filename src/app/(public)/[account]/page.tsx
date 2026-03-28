@@ -4,6 +4,7 @@ import ProductGrid from "@/components/catalog/ProductGrid";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import { notFound } from "next/navigation";
 import type { Plan } from "@/lib/plan/plan.config";
+import { Metadata } from 'next';
 
 type PageProps = {
     params: Promise<{ account: string }>;
@@ -19,6 +20,38 @@ async function getAccountDataBySlug(slug: string) {
 
     if (error || !data) return null;
     return data;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { account: accountSlug } = await params;
+    const accountData = await getAccountDataBySlug(accountSlug);
+
+    if (!accountData) {
+        return {
+            title: "Catálogo no encontrado",
+        };
+    }
+
+    const title = `${accountData.name} | Catálogo Online`;
+    const description = accountData.description || `Explora el catálogo de productos de ${accountData.name}.`;
+
+    return {
+        title: title,
+        description: description,
+        openGraph: {
+            title: title,
+            description: description,
+            type: 'website',
+            // Opcional: Si el local tiene un logo, podrías poner la URL acá. 
+            // images: ['https://tu-dominio.com/logo-default.jpg'], 
+            siteName: accountData.name,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: title,
+            description: description,
+        }
+    };
 }
 
 export default async function PublicPage({ params }: PageProps) {
