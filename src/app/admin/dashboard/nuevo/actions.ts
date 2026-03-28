@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { PLAN_RULES, type Plan } from '@/lib/plan/plan.config'
 
 export async function createProductAction(prevState: unknown, formData: FormData) {
     const name = formData.get('name') as string
@@ -28,14 +29,31 @@ export async function createProductAction(prevState: unknown, formData: FormData
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'No autorizado' }
 
+    //Lógica de seguridad en el backend 
     const { data: accountData, error: accountError } = await supabase
         .from('accounts')
-        .select('id')
+        .select('id, plan')
         .eq('user_id', user.id)
         .single()
 
     if (accountError || !accountData) return { error: 'No se encontró la cuenta del negocio' }
 
+    //Lógica de seguridad en el backend 
+    const currentPlan = (accountData.plan as Plan) || 'basic'
+    const limit = PLAN_RULES[currentPlan].productLimit
+
+    // Contamos cuántos productos tiene esta cuenta antes de dejarlo seguir
+    const { count } = await supabase
+        .from('products')
+        .select('id', { count: 'exact', head: true })
+        .eq('account_id', accountData.id)
+
+    // Si llegó o pasó el límite, cortamos todo ANTES de subir la imagen
+    if (count !== null && count >= limit) {
+        return { error: `Límite alcanzado: El plan ${currentPlan === 'basic' ? 'Básico' : currentPlan} permite hasta ${limit} productos. Contactanos para ampliar.` }
+    }
+
+    // --- Si pasa el control, recién ahí procesamos la imagen ---
     let image_url = null
 
     if (image && image.size > 0) {
