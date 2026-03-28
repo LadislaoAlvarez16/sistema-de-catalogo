@@ -2,7 +2,7 @@ export type Plan = "basic" | "medium" | "pro";
 
 export const PLAN_RULES = {
     basic: {
-        showPrices: false,
+        showPrices: true,
         whatsappCTA: true,
         productModal: false,
         productPage: false,
@@ -11,7 +11,7 @@ export const PLAN_RULES = {
         categoryLimit: 5,
     },
     medium: {
-        showPrices: false,
+        showPrices: true,
         whatsappCTA: true,
         productModal: true,
         productPage: false,
@@ -25,7 +25,7 @@ export const PLAN_RULES = {
         productModal: true,
         productPage: true,
         filters: true,
-        productLimit: Infinity,
-        categoryLimit: Infinity,
+        productLimit: 2000,    // Límite técnico de seguridad en vez de Infinity
+        categoryLimit: 100,    // Límite técnico de seguridad
     },
 } as const;
