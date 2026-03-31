@@ -18,7 +18,10 @@ export default function ProductCard({ product, plan, onClick }: Props) {
     const priceLabel = showPrice && product.price !== null ? `$${product.price}` : "Consultar";
 
     return (
-        <li className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+        <li
+            onClick={onClick}
+            className={`flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md ${onClick ? "cursor-pointer" : ""}`}
+        >
             <div className="relative h-48 w-full bg-gray-100">
                 <Image
                     src={imageSrc}
@@ -48,7 +51,10 @@ export default function ProductCard({ product, plan, onClick }: Props) {
 
                         <button
                             type="button"
-                            onClick={onClick}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onClick?.();
+                            }}
                             className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                         >
                             <Eye className="h-4 w-4" />

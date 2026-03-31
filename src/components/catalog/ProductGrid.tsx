@@ -19,7 +19,7 @@ type Props = {
     plan: Plan;
     categories: Category[];
     phoneNumber?: string;
-    accountData: { name: string; description: string | null }; // 🔹 Agregado para el Header
+    accountData: { name: string; description: string | null };
 };
 
 type SortOption = "name-asc" | "name-desc" | "category";
@@ -33,7 +33,7 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
     const [sortBy, setSortBy] = useState<SortOption>("name-asc");
     const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
 
-    // 🔹 Estado para el menú de categorías (TKT-01 y TKT-02)
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const rules = getPlanRules(plan);
