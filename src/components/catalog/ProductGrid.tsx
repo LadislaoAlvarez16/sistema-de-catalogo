@@ -126,28 +126,6 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
                 </div>
             </header>
 
-            {canUseSearch && (
-                <section className="px-4">
-                    <div className="relative mx-auto mt-8 max-w-3xl">
-                        <div className="group relative">
-                            <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
-                                <Search className="h-5 w-5 text-gray-400 transition-colors group-focus-within:text-blue-500" />
-                            </div>
-                            <input
-                                type="text"
-                                placeholder="Buscar productos..."
-                                value={searchQuery}
-                                onChange={(e) => {
-                                    setSearchQuery(e.target.value);
-                                    setVisibleCount(PRODUCTS_PER_PAGE);
-                                }}
-                                className="w-full rounded-2xl border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                            />
-                        </div>
-                    </div>
-                </section>
-            )}
-
             {isMenuOpen && (
                 <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}>
                     <aside
@@ -219,14 +197,34 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
                 </div>
             )}
 
-            <section className="mx-auto flex max-w-4xl flex-col items-center px-4 pb-6 pt-8 text-center">
-                <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 md:text-5xl">
-                    {accountData?.name || "Catálogo"}
+            <section className="mx-auto flex max-w-4xl flex-col items-center px-4 pt-8 text-center">
+                <h1 className="mb-4 text-center text-4xl font-bold tracking-tight text-gray-900 md:text-5xl">
+                    Descubrí Nuestro Catálogo Completo
                 </h1>
                 {accountData?.description && (
                     <p className="max-w-2xl text-base leading-relaxed text-gray-500 md:text-lg">
                         {accountData.description}
                     </p>
+                )}
+
+                {canUseSearch && (
+                    <div className="relative mt-6 mb-8 w-full max-w-3xl">
+                        <div className="group relative">
+                            <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                                <Search className="h-5 w-5 text-gray-400 transition-colors group-focus-within:text-blue-500" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Buscar productos..."
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    setVisibleCount(PRODUCTS_PER_PAGE);
+                                }}
+                                className="w-full rounded-2xl border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            />
+                        </div>
+                    </div>
                 )}
             </section>
 

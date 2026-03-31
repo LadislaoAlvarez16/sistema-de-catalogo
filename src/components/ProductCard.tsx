@@ -1,55 +1,61 @@
-import type { Product } from "@/types/product";
-import { canShowPrices } from "@/lib/plan/plan.helpers";
-import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import { Eye } from "lucide-react";
 import Image from "next/image";
-import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
+import { canShowPrices } from "@/lib/plan/plan.helpers";
 import type { Plan } from "@/lib/plan/plan.config";
+import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
+import type { Product } from "@/types/product";
 
 type Props = {
     product: Product;
     plan: Plan;
-    phoneNumber?: string; // Lo preparamos para recibir el número
+    phoneNumber?: string;
     onClick?: () => void;
 };
 
-export default function ProductCard({ product, plan, phoneNumber, onClick }: Props) {
+export default function ProductCard({ product, plan, onClick }: Props) {
     const showPrice = canShowPrices(plan);
     const imageSrc = getProductImageUrl(product.image_url);
-
-    // Armamos el texto dependiendo de si se muestra el precio o no
-    const wpMessage = showPrice && product.price
-        ? `Hola, me interesa el producto: *${product.name}* que está a *$${product.price}*. ¿Tienen stock?`
-        : `Hola, me interesa el producto: *${product.name}*. ¿Me podrían dar más información?`;
+    const priceLabel = showPrice && product.price !== null ? `$${product.price}` : "Consultar";
 
     return (
-        <li
-            onClick={onClick}
-            className="cursor-pointer flex flex-col gap-3 rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-zinc-700 transition"
-        >
-            <Image
-                src={imageSrc}
-                alt={product.name}
-                width={300}
-                height={300}
-                className="w-full h-56 object-cover rounded-lg"
-            />
-
-            <h2>{product.name}</h2>
-
-            {product.description && <p className="text-sm text-zinc-400">{product.description}</p>}
-
-            {showPrice && product.price !== null && (
-                <strong className="text-lg">${product.price}</strong>
-            )}
-
-            <p className="text-xs text-zinc-500">Categoría: {product.category}</p>
-
-            {/* Evitamos que el clic en el botón abra el modal de la tarjeta */}
-            <div onClick={(e) => e.stopPropagation()} className="mt-auto pt-2">
-                <WhatsAppButton
-                    message={wpMessage}
-                    phoneNumber={phoneNumber}
+        <li className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+            <div className="relative h-48 w-full bg-gray-100">
+                <Image
+                    src={imageSrc}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    className="object-cover"
                 />
+            </div>
+
+            <div className="flex grow flex-col p-5">
+                <p className="mb-1 text-xs uppercase tracking-wide text-gray-500">
+                    {product.category || "Sin categoría"}
+                </p>
+
+                <h2 className="mb-2 line-clamp-2 text-lg font-semibold text-gray-900">
+                    {product.name}
+                </h2>
+
+                <div className="mt-auto">
+                    <p className="line-clamp-3 text-sm text-gray-600">
+                        {product.description || "Descubrí más detalles de este producto en un solo clic."}
+                    </p>
+
+                    <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+                        <span className="text-xl font-bold text-gray-900">{priceLabel}</span>
+
+                        <button
+                            type="button"
+                            onClick={onClick}
+                            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                        >
+                            <Eye className="h-4 w-4" />
+                            <span>Ver</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </li>
     );
