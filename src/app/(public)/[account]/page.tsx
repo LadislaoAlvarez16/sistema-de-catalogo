@@ -10,7 +10,6 @@ type PageProps = {
     params: Promise<{ account: string }>;
 };
 
-//Cambiamos el nombre y le decimos que traiga más campos
 async function getAccountDataBySlug(slug: string) {
     const { data, error } = await supabase
         .from("accounts")
@@ -42,8 +41,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             title: title,
             description: description,
             type: 'website',
-            // Opcional: Si el local tiene un logo, podrías poner la URL acá. 
-            // images: ['https://tu-dominio.com/logo-default.jpg'], 
             siteName: accountData.name,
         },
         twitter: {
@@ -57,11 +54,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function PublicPage({ params }: PageProps) {
     const { account: accountSlug } = await params;
 
-    //Usamos la nueva función para obtener toda la info
     const accountData = await getAccountDataBySlug(accountSlug);
     if (!accountData) notFound();
 
-    const accountId = accountData.id; // Extraemos el ID para seguir usándolo abajo
+    const accountId = accountData.id;
 
     const config = await getCatalogConfig(accountId);
     if (!config) notFound();
@@ -100,27 +96,15 @@ export default async function PublicPage({ params }: PageProps) {
         );
     }
 
+    // 🔹 ACÁ ESTÁ LA MAGIA: 
+    // Le pasamos toda la info limpia al ProductGrid y él se encarga de dibujar el catálogo.
     return (
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-            {/*Reemplazamos el h1 "Productos" por el encabezado dinámico */}
-            <div className="mb-8 border-b border-zinc-800 pb-6 text-center sm:text-left">
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                    {accountData.name || "Catálogo de Productos"}
-                </h1>
-                {accountData.description && (
-                    <p className="text-zinc-400 text-lg max-w-2xl mt-2">
-                        {accountData.description}
-                    </p>
-                )}
-            </div>
-
-            <ProductGrid
-                products={products}
-                plan={config.plan as Plan}
-                categories={categories || []}
-                phoneNumber={config.whatsapp || undefined}
-            />
-        </main>
+        <ProductGrid
+            products={products}
+            plan={config.plan as Plan}
+            categories={categories || []}
+            phoneNumber={config.whatsapp || undefined}
+            accountData={accountData}
+        />
     );
 }
