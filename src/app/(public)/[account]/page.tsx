@@ -96,7 +96,6 @@ export default async function PublicPage({ params }: PageProps) {
         );
     }
 
-    // 🔹 ACÁ ESTÁ LA MAGIA: 
     // Le pasamos toda la info limpia al ProductGrid y él se encarga de dibujar el catálogo.
     return (
         <ProductGrid
