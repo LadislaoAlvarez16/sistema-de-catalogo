@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase/client";
 import type { Product } from "@/types/product";
 import ProductGrid from "@/components/catalog/ProductGrid";
+import Footer from "@/components/layout/Footer";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import { notFound } from "next/navigation";
 import type { Plan } from "@/lib/plan/plan.config";
@@ -98,12 +99,18 @@ export default async function PublicPage({ params }: PageProps) {
 
     // Le pasamos toda la info limpia al ProductGrid y él se encarga de dibujar el catálogo.
     return (
-        <ProductGrid
-            products={products}
-            plan={config.plan as Plan}
-            categories={categories || []}
-            phoneNumber={config.whatsapp || undefined}
-            accountData={accountData}
-        />
+        <>
+            <ProductGrid
+                products={products}
+                plan={config.plan as Plan}
+                categories={categories || []}
+                phoneNumber={config.whatsapp || undefined}
+                accountData={accountData}
+            />
+            <Footer
+                accountData={accountData}
+                phoneNumber={config.whatsapp || undefined}
+            />
+        </>
     );
 }
