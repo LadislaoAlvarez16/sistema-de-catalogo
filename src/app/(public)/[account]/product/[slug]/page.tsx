@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import InteractiveImageWithZoom from "@/components/ui/InteractiveImageWithZoom";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
 import type { Product } from "@/types/product";
@@ -73,7 +75,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    const { slug } = await params;
+    const { account, slug } = await params;
     const product = await getActiveProductBySlug(slug);
     if (!product) {
         notFound();
@@ -90,32 +92,54 @@ export default async function ProductPage({ params }: ProductPageProps) {
         : `Hola, me interesa el producto: *${product.name}*. ¿Me podrían dar más información?`;
 
     return (
-        <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6 p-6">
-            <Image
-                src={getProductImageUrl(product.image_url)}
-                alt={product.name}
-                width={1200}
-                height={1200}
-                className="h-80 w-full rounded-xl object-cover border border-zinc-800"
-                priority
-            />
+        <main className="min-h-screen bg-white">
+            <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
+                <Link
+                    href={`/${account}`}
+                    className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    <span>Volver al catálogo</span>
+                </Link>
 
-            <div className="space-y-2">
-                <h1 className="text-3xl font-semibold">{product.name}</h1>
-                <p className="text-zinc-400">Categoría: {product.category}</p>
-                {product.description && (
-                    <p className="text-zinc-300 leading-relaxed">{product.description}</p>
-                )}
-                {showPrice && product.price !== null && (
-                    <p className="text-2xl font-bold">${product.price}</p>
-                )}
-            </div>
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-12 items-start">
+                    <InteractiveImageWithZoom
+                        src={getProductImageUrl(product.image_url)}
+                        alt={product.name}
+                        className="aspect-square relative rounded-2xl overflow-hidden border border-gray-100 shadow-sm"
+                    />
 
-            <div>
-                <WhatsAppButton
-                    message={wpMessage}
-                    phoneNumber={config.whatsapp || undefined}
-                />
+                    <div className="flex flex-col">
+                        <p className="mb-3 text-sm font-bold text-blue-600 uppercase tracking-wider">
+                            {product.category}
+                        </p>
+
+                        <h1 className="mb-4 text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                            {product.name}
+                        </h1>
+
+                        {showPrice && product.price !== null && (
+                            <p className="mb-6 text-3xl font-bold text-gray-900">
+                                ${product.price}
+                            </p>
+                        )}
+
+                        <hr className="my-6 border-gray-100" />
+
+                        {product.description && (
+                            <p className="mb-8 whitespace-pre-wrap text-base leading-relaxed text-gray-600">
+                                {product.description}
+                            </p>
+                        )}
+
+                        <div className="mt-auto">
+                            <WhatsAppButton
+                                message={wpMessage}
+                                phoneNumber={config.whatsapp || undefined}
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     );
