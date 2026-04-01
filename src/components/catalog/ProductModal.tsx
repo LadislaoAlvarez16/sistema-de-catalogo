@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { ExternalLink, MessageCircle, X } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import InteractiveImageWithZoom from "@/components/ui/InteractiveImageWithZoom";
 import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
 import type { Plan } from "@/lib/plan/plan.config";
 import { canShowPrices, getPlanRules } from "@/lib/plan/plan.helpers";
@@ -70,12 +70,10 @@ export default function ProductModal({ product, plan, onClose }: Props) {
 
                 <div className="custom-scrollbar flex-1 overflow-y-auto p-6 md:p-8">
                     {imageSrc ? (
-                        <Image
+                        <InteractiveImageWithZoom
                             src={imageSrc}
                             alt={product.name}
-                            width={800}
-                            height={600}
-                            className="mb-6 h-64 w-full rounded-2xl bg-gray-100 object-cover md:h-80"
+                            className="mb-6 h-64 w-full rounded-2xl bg-gray-100 md:h-80"
                         />
                     ) : (
                         <div className="mb-6 flex h-64 w-full items-center justify-center rounded-2xl bg-gray-100 text-gray-500 md:h-80">
