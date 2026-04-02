@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { updateProductAction } from './actions'
 import { notFound } from 'next/navigation'
 import FormEditarProducto from './FormEditarProducto'
+import Link from 'next/link'
 
 export default async function EditarProductoPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -18,9 +19,14 @@ export default async function EditarProductoPage({ params }: { params: Promise<{
     const updateActionWithId = updateProductAction.bind(null, id)
 
     return (
-        <div className="max-w-md mx-auto py-10 px-4 text-white">
-            <h1 className="text-2xl font-bold mb-6 text-center">Editar producto</h1>
-            <FormEditarProducto product={product} categorias={categorias || []} action={updateActionWithId} />
+        <div className="min-h-screen bg-gray-50 p-6 text-gray-900">
+            <div className="max-w-3xl mx-auto">
+                <Link href="/admin/dashboard" className="inline-flex items-center text-gray-600 hover:text-gray-800 mb-6">
+                    ← Volver
+                </Link>
+                <h1 className="text-2xl font-bold mb-6">Editar producto</h1>
+                <FormEditarProducto product={product} categorias={categorias || []} action={updateActionWithId} />
+            </div>
         </div>
     )
 }
