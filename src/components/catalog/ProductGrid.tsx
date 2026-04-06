@@ -22,7 +22,7 @@ type Props = {
     accountData: { name: string; description: string | null };
 };
 
-type SortOption = "name-asc" | "name-desc" | "category";
+type SortOption = "name-asc" | "name-desc" | "category" | "price-asc" | "price-desc";
 
 const PRODUCTS_PER_PAGE = 8;
 
@@ -75,6 +75,8 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
             case "name-asc": return a.name.localeCompare(b.name);
             case "name-desc": return b.name.localeCompare(a.name);
             case "category": return (a.category || "").localeCompare(b.category || "");
+            case "price-asc": return (a.price || 0) - (b.price || 0);
+            case "price-desc": return (b.price || 0) - (a.price || 0);
             default: return 0;
         }
     });
@@ -158,6 +160,8 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
                                         <option value="name-asc">Nombre A–Z</option>
                                         <option value="name-desc">Nombre Z–A</option>
                                         <option value="category">Categoría</option>
+                                        <option value="price-asc">Menor precio</option>
+                                        <option value="price-desc">Mayor precio</option>
                                     </select>
                                 </div>
                             )}
