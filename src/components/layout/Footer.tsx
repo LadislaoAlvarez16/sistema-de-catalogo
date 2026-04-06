@@ -8,8 +8,9 @@ type Props = {
 };
 
 export default function Footer({ accountData, phoneNumber }: Props) {
-    const whatsappHref = phoneNumber
-        ? `https://api.whatsapp.com/send?text=${encodeURIComponent("Hola, me gustaría consultar por sus productos.")}`
+    const cleanPhone = phoneNumber?.replace(/\D/g, "") ?? "";
+    const whatsappHref = cleanPhone
+        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent("Hola, me gustaría consultar por sus productos.")}`
         : "#";
 
     return (
