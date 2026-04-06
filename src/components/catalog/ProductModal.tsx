@@ -13,10 +13,11 @@ import type { Product } from "@/types/product";
 type Props = {
     product: Product;
     plan: Plan;
+    phoneNumber?: string;
     onClose: () => void;
 };
 
-export default function ProductModal({ product, plan, onClose }: Props) {
+export default function ProductModal({ product, plan, phoneNumber, onClose }: Props) {
     const imageSrc = getProductImageUrl(product.image_url);
     const showPrice = canShowPrices(plan);
     const rules = getPlanRules(plan);
@@ -39,7 +40,10 @@ export default function ProductModal({ product, plan, onClose }: Props) {
     const whatsappMessage = showPrice && product.price !== null
         ? `Hola, me interesa el producto: *${product.name}* que está a *$${product.price}*. ¿Tienen stock?`
         : `Hola, me interesa el producto: *${product.name}*. ¿Me podrían dar más información?`;
-    const whatsappHref = `https://api.whatsapp.com/send?text=${encodeURIComponent(whatsappMessage)}`;
+    const cleanPhone = phoneNumber?.replace(/\D/g, "") ?? "";
+    const whatsappHref = cleanPhone
+        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappMessage)}`
+        : `https://api.whatsapp.com/send?text=${encodeURIComponent(whatsappMessage)}`;
 
     return (
         <div

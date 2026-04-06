@@ -265,6 +265,7 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
                 <ProductModal
                     product={selectedProduct}
                     plan={plan}
+                    phoneNumber={phoneNumber}
                     onClose={() => setSelectedProduct(null)}
                 />
             )}
