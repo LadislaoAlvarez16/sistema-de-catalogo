@@ -7,15 +7,27 @@ import InteractiveImageWithZoom from "@/components/ui/InteractiveImageWithZoom";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
 import type { Product } from "@/types/product";
-import { supabase } from "@/lib/supabase/client";
+import { createPublicClient } from "@/lib/supabase/server-public";
 import { canShowPrices } from "@/lib/plan/plan.helpers";
 
 type ProductPageProps = {
-    params: Promise<{ account: string; slug: string }>;
+    params: { account: string; slug: string };
 };
 
-async function getActiveProductBySlug(slug: string): Promise<Product | null> {
-    const { data, error } = await supabase
+async function getActiveProductBySlug(accountSlug: string, productSlug: string): Promise<Product | null> {
+    const supabase = await createPublicClient();
+
+    // First, get the account ID from the slug
+    const { data: accountData, error: accountError } = await supabase
+        .from("accounts")
+        .select("id")
+        .eq("slug", accountSlug)
+        .maybeSingle<{ id: string }>();
+
+    if (accountError || !accountData) return null;
+
+    // Then, get the product by slug and account_id
+    const { data: product, error: productError } = await supabase
         .from("products")
         .select(`
             id,
@@ -28,16 +40,18 @@ async function getActiveProductBySlug(slug: string): Promise<Product | null> {
             active,
             account_id
         `)
-        .eq("slug", slug)
+        .eq("slug", productSlug)
+        .eq("account_id", accountData.id)
         .eq("active", true)
         .maybeSingle<Product>();
-    if (error) return null;
-    return data;
+
+    if (productError || !product) return null;
+    return product;
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-    const { slug } = await params;
-    const product = await getActiveProductBySlug(slug);
+    const { account: accountSlug, slug: productSlug } = params;
+    const product = await getActiveProductBySlug(accountSlug, productSlug);
     if (!product) {
         return {
             title: "Producto no encontrado",
@@ -75,8 +89,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    const { account, slug } = await params;
-    const product = await getActiveProductBySlug(slug);
+    const { account, slug } = params;
+    const product = await getActiveProductBySlug(account, slug);
     if (!product) {
         notFound();
     }

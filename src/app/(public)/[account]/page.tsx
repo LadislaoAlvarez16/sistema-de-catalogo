@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/client";
+import { createPublicClient } from "@/lib/supabase/server-public";
 import type { Product } from "@/types/product";
 import ProductGrid from "@/components/catalog/ProductGrid";
 import Footer from "@/components/layout/Footer";
@@ -8,10 +8,11 @@ import type { Plan } from "@/lib/plan/plan.config";
 import { Metadata } from 'next';
 
 type PageProps = {
-    params: Promise<{ account: string }>;
+    params: { account: string };
 };
 
 async function getAccountDataBySlug(slug: string) {
+    const supabase = await createPublicClient();
     const { data, error } = await supabase
         .from("accounts")
         .select("id, name, description")
@@ -63,6 +64,7 @@ export default async function PublicPage({ params }: PageProps) {
     const config = await getCatalogConfig(accountId);
     if (!config) notFound();
 
+    const supabase = await createPublicClient();
     const { data: products, error: prodError } = await supabase
         .from("products")
         .select(`
