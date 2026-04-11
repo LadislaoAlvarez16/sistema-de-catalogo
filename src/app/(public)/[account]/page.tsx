@@ -6,8 +6,7 @@ import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import type { Plan } from "@/lib/plan/plan.config";
 import { Metadata } from 'next';
 
-export const revalidate = 0; // No cache, siempre fresco. Cambialo a 60 o 300 para cachear 1 o 5 minutos respectivamente.
-
+export const dynamic = 'force-dynamic'; // Esto le dice a Next que NO cachee esta página, y que la ejecute SIEMPRE en el servidor. Es importante para que los cambios en Supabase se reflejen al instante sin tener que esperar a la revalidación de la caché.
 type PageProps = {
     params: Promise<{ account: string }>;
 };
