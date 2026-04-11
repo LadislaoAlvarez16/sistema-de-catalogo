@@ -7,7 +7,7 @@ import type { Plan } from "@/lib/plan/plan.config";
 import { Metadata } from 'next';
 
 type PageProps = {
-    params: { account: string };
+    params: Promise<{ account: string }>;
 };
 
 // Modificamos esto para que devuelva el error y podamos verlo
