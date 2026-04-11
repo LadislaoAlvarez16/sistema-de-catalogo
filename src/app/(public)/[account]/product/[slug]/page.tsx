@@ -11,7 +11,7 @@ import { createPublicClient } from "@/lib/supabase/server-public";
 import { canShowPrices } from "@/lib/plan/plan.helpers";
 
 type ProductPageProps = {
-    params: { account: string; slug: string };
+    params: Promise<{ account: string; slug: string }>;
 };
 
 async function getActiveProductBySlug(accountSlug: string, productSlug: string): Promise<Product | null> {
@@ -50,7 +50,7 @@ async function getActiveProductBySlug(accountSlug: string, productSlug: string):
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-    const { account: accountSlug, slug: productSlug } = params;
+    const { account: accountSlug, slug: productSlug } = await params;
     const product = await getActiveProductBySlug(accountSlug, productSlug);
     if (!product) {
         return {
@@ -89,7 +89,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    const { account, slug } = params;
+    const { account, slug } = await params;
     const product = await getActiveProductBySlug(account, slug);
     if (!product) {
         notFound();
