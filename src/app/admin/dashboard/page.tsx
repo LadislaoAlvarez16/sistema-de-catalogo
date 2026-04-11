@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import DeleteProductButton from '@/components/admin/DeleteProductButton'
 import { PLAN_RULES, type Plan } from '@/lib/plan/plan.config'
 
 type Product = {
@@ -161,12 +162,15 @@ export default async function DashboardPage() {
                       {product.price ? `$${product.price}` : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <Link
-                        href={`/admin/dashboard/editar/${product.id}`}
-                        className="text-blue-600 hover:text-blue-900 font-medium bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors"
-                      >
-                        Editar
-                      </Link>
+                      <div className="flex gap-2 justify-end">
+                        <Link
+                          href={`/admin/dashboard/editar/${product.id}`}
+                          className="text-blue-600 hover:text-blue-900 font-medium bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors"
+                        >
+                          Editar
+                        </Link>
+                        <DeleteProductButton productId={product.id} />
+                      </div>
                     </td>
                   </tr>
                 ))}
