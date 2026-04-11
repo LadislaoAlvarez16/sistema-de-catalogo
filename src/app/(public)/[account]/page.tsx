@@ -6,6 +6,8 @@ import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import type { Plan } from "@/lib/plan/plan.config";
 import { Metadata } from 'next';
 
+export const revalidate = 0; // No cache, siempre fresco. Cambialo a 60 o 300 para cachear 1 o 5 minutos respectivamente.
+
 type PageProps = {
     params: Promise<{ account: string }>;
 };
