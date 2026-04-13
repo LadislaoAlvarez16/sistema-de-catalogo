@@ -28,11 +28,11 @@ const PRODUCTS_PER_PAGE = 8;
 
 export default function ProductGrid({ products, plan, categories, phoneNumber, accountData }: Props) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    // 🕵️‍♂️ ARREGLO 1: Ahora esto guardará el ID de la categoría, no el texto del nombre
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<SortOption>("name-asc");
     const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
-
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -46,20 +46,22 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
             ? categories
             : categories.slice(0, rules.categoryLimit);
 
-    const allowedCategoryNames = allowedCategories.map(c => c.name);
+    // 🕵️‍♂️ ARREGLO 2: Usamos un array de IDs para no fallar por culpa de espacios o mayúsculas
+    const allowedCategoryIds = allowedCategories.map(c => c.id);
 
     const productsWithinCategoryLimit =
         rules.categoryLimit === Infinity
             ? products
             : products.filter((p) =>
-                allowedCategoryNames.includes(p.category as string)
+                allowedCategoryIds.includes(p.category_id as string)
             );
 
+    // 🕵️‍♂️ ARREGLO 3: Filtramos usando estrictamente el category_id
     const categoryFiltered =
         selectedCategory === "all"
             ? productsWithinCategoryLimit
             : productsWithinCategoryLimit.filter(
-                (p) => p.category === selectedCategory
+                (p) => p.category_id === selectedCategory
             );
 
     const searchFiltered =
@@ -185,11 +187,12 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
                                         key={category.id}
                                         type="button"
                                         onClick={() => {
-                                            setSelectedCategory(category.name);
+                                            // 🕵️‍♂️ ARREGLO 4: Asignamos el ID de la categoría
+                                            setSelectedCategory(category.id);
                                             setVisibleCount(PRODUCTS_PER_PAGE);
                                             setIsMenuOpen(false);
                                         }}
-                                        className={`w-full flex items-center justify-between border-b border-gray-50 py-4 text-left transition-colors ${selectedCategory === category.name ? "text-blue-600" : "text-gray-700 hover:text-blue-600"}`}
+                                        className={`w-full flex items-center justify-between border-b border-gray-50 py-4 text-left transition-colors ${selectedCategory === category.id ? "text-blue-600" : "text-gray-700 hover:text-blue-600"}`}
                                     >
                                         <span>{category.name}</span>
                                         <ChevronRight className="h-4 w-4 text-gray-400" />
@@ -233,8 +236,11 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
             </section>
 
             <main className="mx-auto w-full max-w-5xl px-4 pb-16">
+                {/* 🕵️‍♂️ ARREGLO 5: Mejoramos el control de la pantalla vacía */}
                 {products.length === 0 ? (
-                    <p className="py-12 text-center text-gray-500">No hay productos para mostrar.</p>
+                    <p className="py-12 text-center text-gray-500">Tu catálogo aún no tiene productos.</p>
+                ) : paginatedProducts.length === 0 ? (
+                    <p className="py-12 text-center text-gray-500">No hay productos que coincidan con esta categoría.</p>
                 ) : (
                     <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {paginatedProducts.map((product) => (
