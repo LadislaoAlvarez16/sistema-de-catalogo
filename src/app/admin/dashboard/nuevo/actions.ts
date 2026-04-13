@@ -21,7 +21,14 @@ export async function createProductAction(prevState: unknown, formData: FormData
         return { error: 'Faltan campos obligatorios' }
     }
 
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+    // Generar slug base a partir del nombre
+    const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+
+    // Generar una cadena alfanumérica aleatoria corta (5 caracteres)
+    const randomSuffix = Math.random().toString(36).substring(2, 7)
+
+    // Concatenar el slug base con el sufijo aleatorio
+    const slug = `${baseSlug}-${randomSuffix}`
 
     const supabase = await createClient()
 
