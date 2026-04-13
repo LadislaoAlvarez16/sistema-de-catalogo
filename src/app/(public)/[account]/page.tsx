@@ -129,6 +129,21 @@ export default async function PublicPage({ params }: PageProps) {
 
     return (
         <>
+            {/* --- INICIO CHIVATO DETECTIVE --- */}
+            <div style={{ background: '#111', color: 'lime', padding: '20px', margin: '20px', borderRadius: '10px', fontFamily: 'monospace' }}>
+                <h3 style={{ borderBottom: '1px solid lime', paddingBottom: '10px', marginTop: 0 }}>🕵️‍♂️ RADAR DE DATOS</h3>
+                <p>ID de Cuenta: {accountId}</p>
+                <p>Productos que trajo Supabase: <b>{products?.length || 0}</b></p>
+                <p>Categorías que trajo Supabase: <b>{categories?.length || 0}</b></p>
+                <details style={{ marginTop: '10px', cursor: 'pointer' }}>
+                    <summary>Ver lista cruda de productos (Click acá)</summary>
+                    <pre style={{ whiteSpace: 'pre-wrap', fontSize: '12px', overflowX: 'auto' }}>
+                        {JSON.stringify(products, null, 2)}
+                    </pre>
+                </details>
+            </div>
+            {/* --- FIN CHIVATO DETECTIVE --- */}
+
             <ProductGrid
                 products={products || []}
                 plan={config.plan as Plan}
