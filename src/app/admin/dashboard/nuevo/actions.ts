@@ -2,7 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { PLAN_RULES, type Plan } from '@/lib/plan/plan.config'
 
 export async function createProductAction(prevState: unknown, formData: FormData) {
@@ -103,5 +102,7 @@ export async function createProductAction(prevState: unknown, formData: FormData
     }
 
     revalidatePath('/admin/dashboard')
-    redirect('/admin/dashboard')
+    revalidatePath('/[account]', 'page')
+
+    return { error: '', success: true }
 }
