@@ -20,7 +20,7 @@ export async function addCategoryAction(formData: FormData) {
 
     if (!account) throw new Error("Cuenta no encontrada")
 
-    // Lógica de seguridad en el backend (El Patovica)
+    // Lógica de seguridad en el backend para verificar el límite de categorías según el plan del usuario
     const currentPlan = (account.plan as Plan) || 'basic'
     const limit = PLAN_RULES[currentPlan].categoryLimit
 

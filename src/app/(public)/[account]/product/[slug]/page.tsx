@@ -17,7 +17,7 @@ type ProductPageProps = {
 async function getActiveProductBySlug(accountSlug: string, productSlug: string): Promise<Product | null> {
     const supabase = await createPublicClient();
 
-    // First, get the account ID from the slug
+    //  Primero buscamos la cuenta para obtener su ID(si existe), que necesitamos para buscar el producto
     const { data: accountData, error: accountError } = await supabase
         .from("accounts")
         .select("id")
@@ -26,7 +26,7 @@ async function getActiveProductBySlug(accountSlug: string, productSlug: string):
 
     if (accountError || !accountData) return null;
 
-    // Then, get the product by slug and account_id
+    // el slug del producto no es único globalmente, sino que es único por cuenta, así que buscamos el producto con ese slug DENTRO de la cuenta que encontramos antes
     const { data: product, error: productError } = await supabase
         .from("products")
         .select(`
@@ -99,7 +99,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         notFound();
     }
 
-    // 🔹 Replicamos la lógica del mensaje dinámico acá también
+    // Mismalógica del mensaje dinámico 
     const showPrice = canShowPrices(config.plan);
     const wpMessage = showPrice && product.price
         ? `Hola, me interesa el producto: *${product.name}* que está a *$${product.price}*. ¿Tienen stock?`

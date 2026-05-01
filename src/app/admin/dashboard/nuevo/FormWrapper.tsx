@@ -1,6 +1,5 @@
 "use client"
 
-// Agregamos startTransition en la importación
 import { useActionState, startTransition, useEffect, useState } from 'react'
 import { createProductAction } from './actions'
 import FormNuevoProducto from './FormNuevoProducto'
@@ -14,18 +13,24 @@ interface Categoria {
 export default function FormWrapper({ categorias }: { categorias: Categoria[] }) {
     const [state, formAction] = useActionState(createProductAction, { error: '' })
     const [showSuccess, setShowSuccess] = useState(false)
-    const [formKey, setFormKey] = useState(Date.now())
+    const [formKey, setFormKey] = useState(() => Date.now()) // <-- Inicialización lazy que arreglamos antes
 
     useEffect(() => {
         if (state?.success) {
-            setShowSuccess(true)
-            setFormKey(Date.now())
 
-            const timeout = window.setTimeout(() => {
+            const showTimer = setTimeout(() => {
+                setShowSuccess(true)
+                setFormKey(Date.now())
+            }, 10)
+
+            const hideTimer = setTimeout(() => {
                 setShowSuccess(false)
             }, 4000)
 
-            return () => window.clearTimeout(timeout)
+            return () => {
+                clearTimeout(showTimer)
+                clearTimeout(hideTimer)
+            }
         }
     }, [state])
 
@@ -34,8 +39,7 @@ export default function FormWrapper({ categorias }: { categorias: Categoria[] })
 
         if (imageFile && imageFile.size > 0) {
             try {
-                console.log('Tamaño original:', (imageFile.size / 1024 / 1024).toFixed(2), 'MB');
-
+                // Solo dejamos la configuración y la compresión en el cliente, sin tocar el formData original hasta que tengamos el archivo comprimido
                 const options = {
                     maxSizeMB: 0.3,
                     maxWidthOrHeight: 1080,
@@ -43,8 +47,6 @@ export default function FormWrapper({ categorias }: { categorias: Categoria[] })
                 };
 
                 const compressedFile = await imageCompression(imageFile, options);
-                console.log('Tamaño comprimido:', (compressedFile.size / 1024 / 1024).toFixed(2), 'MB');
-
                 formData.set('image', compressedFile, compressedFile.name);
             } catch (error) {
                 console.error('Error al comprimir la imagen:', error);
@@ -60,8 +62,8 @@ export default function FormWrapper({ categorias }: { categorias: Categoria[] })
     return (
         <>
             {showSuccess && (
-                <div className="mb-4 rounded-lg bg-emerald-100 px-4 py-3 text-emerald-800 shadow-sm shadow-emerald-200">
-                    Producto creado con éxito.
+                <div className="mb-4 rounded-lg bg-emerald-100 px-4 py-3 text-emerald-800 shadow-sm shadow-emerald-200 transition-all">
+                    ✅ Producto creado con éxito.
                 </div>
             )}
 
