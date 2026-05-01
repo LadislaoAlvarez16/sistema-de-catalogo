@@ -9,7 +9,7 @@ export async function proxy(request: NextRequest) {
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
 
-  // ACÁ ESTABA EL ERROR: Le decimos cuál es tu dominio real de Vercel
+  // Dominio real de Vercel 
   const mainDomain = process.env.NODE_ENV === 'production' ? 'sistema-de-catalogo.vercel.app' : 'localhost:3000'
 
   // Si alguien entra desde un dominio que NO es el tuyo (Ej: cerrajeria-pepe.com.ar)
@@ -19,7 +19,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.rewrite(url)
   }
 
-  // Si entró por tu dominio principal (Vercel o localhost), lo dejamos pasar normal
+  // Si entró desde tu dominio principal, dejamos que Next maneje la ruta normalmente
   return response
 }
 

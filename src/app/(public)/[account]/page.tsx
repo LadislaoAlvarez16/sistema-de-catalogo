@@ -11,7 +11,7 @@ type PageProps = {
     params: Promise<{ account: string }>;
 };
 
-// Modificamos esto para que devuelva el error y podamos verlo
+
 async function getAccountDataBySlug(slug: string) {
     const supabase = await createPublicClient();
     const { data, error } = await supabase
@@ -58,7 +58,7 @@ export default async function PublicPage({ params }: PageProps) {
 
     const { data: accountData, error: accountError } = await getAccountDataBySlug(accountSlug);
 
-    // CHIVATO 1: Si falla la conexión a la tabla accounts
+    // AVISO1: Si falla la conexión a la tabla accounts
     if (accountError) {
         return (
             <main style={{ padding: '50px', textAlign: 'center' }}>
@@ -68,7 +68,7 @@ export default async function PublicPage({ params }: PageProps) {
         );
     }
 
-    // CHIVATO 2: Si conecta bien, pero no encuentra el slug
+    // AVISO2: Si conecta bien, pero no encuentra el slug
     if (!accountData) {
         return (
             <main style={{ padding: '50px', textAlign: 'center' }}>
@@ -82,7 +82,7 @@ export default async function PublicPage({ params }: PageProps) {
     const accountId = accountData.id;
     const config = await getCatalogConfig(accountId);
 
-    // CHIVATO 3: Si encuentra la cuenta, pero falla al buscar su configuración
+    // AVISO3: Si encuentra la cuenta, pero falla al buscar su configuración
     if (!config) {
         return (
             <main style={{ padding: '50px', textAlign: 'center' }}>
