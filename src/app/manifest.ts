@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Panel de Gestión',
     short_name: 'Panel',
     description: 'Gestioná tu catálogo online',
-    start_url: '/admin',
+    start_url: '/admin/dashboard',
     display: 'standalone',
     background_color: '#ffffff',
     theme_color: '#111827', // Un tono oscuro, gris 900
