@@ -204,7 +204,7 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
 
             <section className="mx-auto flex max-w-4xl flex-col items-center px-4 pt-8 text-center">
                 <h1 className="mb-4 text-center text-4xl font-bold tracking-tight text-gray-900 md:text-5xl">
-                    Descubrí Nuestro Catálogo Completo
+                    Catálogo de {accountData?.name || "Productos"}
                 </h1>
                 {accountData?.description && (
                     <p className="max-w-2xl text-base leading-relaxed text-gray-500 md:text-lg">
@@ -238,7 +238,11 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
                 {products.length === 0 ? (
                     <p className="py-12 text-center text-gray-500">Tu catálogo aún no tiene productos.</p>
                 ) : paginatedProducts.length === 0 ? (
-                    <p className="py-12 text-center text-gray-500">No hay productos que coincidan con esta categoría.</p>
+                    <p className="py-12 text-center text-gray-500">
+                        {searchQuery.trim() !== "" 
+                            ? `No encontramos productos que coincidan con '${searchQuery}'` 
+                            : "No hay productos en esta categoría por el momento"}
+                    </p>
                 ) : (
                     <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {paginatedProducts.map((product) => (
