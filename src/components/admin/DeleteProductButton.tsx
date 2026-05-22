@@ -12,8 +12,9 @@ export default function DeleteProductButton({ productId }: DeleteProductButtonPr
     const [isDeleting, startTransition] = useTransition()
 
     const handleDelete = () => {
-        if (window.confirm('¿Estás seguro de eliminar este producto?')) {
-            startTransition(async () => {
+        if (!window.confirm('¿Seguro que querés eliminar este producto? Esta acción no se puede deshacer.')) return;
+
+        startTransition(async () => {
                 try {
                     await deleteProductServerAction(productId)
                 } catch (error) {
