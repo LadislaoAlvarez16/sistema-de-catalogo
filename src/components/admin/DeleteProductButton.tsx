@@ -12,16 +12,16 @@ export default function DeleteProductButton({ productId }: DeleteProductButtonPr
     const [isDeleting, startTransition] = useTransition()
 
     const handleDelete = () => {
-        if (window.confirm('¿Estás seguro de eliminar este producto?')) {
-            startTransition(async () => {
-                try {
-                    await deleteProductServerAction(productId)
-                } catch (error) {
-                    console.error('Error al eliminar el producto:', error)
-                    alert('Error al eliminar el producto. Inténtalo de nuevo.')
-                }
-            })
-        }
+        if (!window.confirm('¿Seguro que querés eliminar este producto? Esta acción no se puede deshacer.')) return;
+
+        startTransition(async () => {
+            try {
+                await deleteProductServerAction(productId)
+            } catch (error) {
+                console.error('Error al eliminar el producto:', error)
+                alert('Error al eliminar el producto. Inténtalo de nuevo.')
+            }
+        })
     }
 
     return (

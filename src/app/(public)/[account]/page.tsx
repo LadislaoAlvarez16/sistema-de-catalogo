@@ -1,4 +1,5 @@
 import { createPublicClient } from "@/lib/supabase/server-public";
+import { notFound } from 'next/navigation';
 import type { Product } from "@/types/product";
 import ProductGrid from "@/components/catalog/ProductGrid";
 import Footer from "@/components/layout/Footer";
@@ -60,23 +61,12 @@ export default async function PublicPage({ params }: PageProps) {
 
     // AVISO1: Si falla la conexión a la tabla accounts
     if (accountError) {
-        return (
-            <main style={{ padding: '50px', textAlign: 'center' }}>
-                <h1 style={{ color: 'red', fontSize: '24px' }}>🛑 Error de Supabase (Tabla Accounts)</h1>
-                <p>Mensaje: {accountError.message}</p>
-            </main>
-        );
+        notFound();
     }
 
     // AVISO2: Si conecta bien, pero no encuentra el slug
     if (!accountData) {
-        return (
-            <main style={{ padding: '50px', textAlign: 'center' }}>
-                <h1 style={{ color: 'orange', fontSize: '24px' }}>⚠️ Cuenta no encontrada</h1>
-                <p>Supabase conectó bien, pero dice que NO EXISTE el slug: <b>{accountSlug}</b></p>
-                <p>Revisá en la base de datos si está escrito exactamente igual (mayúsculas, espacios, etc).</p>
-            </main>
-        );
+        notFound();
     }
 
     const accountId = accountData.id;
@@ -84,12 +74,7 @@ export default async function PublicPage({ params }: PageProps) {
 
     // AVISO3: Si encuentra la cuenta, pero falla al buscar su configuración
     if (!config) {
-        return (
-            <main style={{ padding: '50px', textAlign: 'center' }}>
-                <h1 style={{ color: 'red', fontSize: '24px' }}>🛑 Error de Configuración</h1>
-                <p>Encontró la cuenta {accountData.name}, pero <b>getCatalogConfig devolvió null</b>.</p>
-            </main>
-        );
+        notFound();
     }
 
     const supabase = await createPublicClient();
@@ -119,12 +104,7 @@ export default async function PublicPage({ params }: PageProps) {
         .order("name", { ascending: true });
 
     if (prodError || catError) {
-        return (
-            <main style={{ padding: 24 }}>
-                <h1 style={{ color: 'red' }}>Error al cargar productos o categorías</h1>
-                <pre>{JSON.stringify(prodError || catError, null, 2)}</pre>
-            </main>
-        );
+        notFound();
     }
 
     return (

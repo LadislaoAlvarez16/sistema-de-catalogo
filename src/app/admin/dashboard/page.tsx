@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import DeleteProductButton from '@/components/admin/DeleteProductButton'
 import { PLAN_RULES, type Plan } from '@/lib/plan/plan.config'
+import CopyCatalogLink from '@/components/admin/CopyCatalogLink'
+import { ExternalLink } from 'lucide-react'
 
 type Product = {
   id: string
@@ -68,10 +70,23 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <h1 className="text-2xl font-bold text-gray-900">¡Bienvenido, {user.email}!</h1>
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
+          <h1 className="text-2xl font-bold text-gray-900">¡Bienvenido, {account?.name || user.email}!</h1>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            {account?.slug && (
+              <div className="flex items-center gap-2 lg:mr-2">
+                <Link
+                  href={`/${account.slug}`}
+                  target="_blank"
+                  className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 px-3 py-2 rounded-lg font-medium text-sm transition-colors shadow-sm"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  <span className="hidden sm:inline">Ver catálogo público</span>
+                </Link>
+                <CopyCatalogLink slug={account.slug} />
+              </div>
+            )}
             <Link
               href="/admin/perfil"
               className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium text-sm transition-colors shadow-sm"

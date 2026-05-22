@@ -8,6 +8,7 @@ export function getProductImageUrl(path: string | null | undefined): string {
     }
 
     // 3. Si es solo el nombre de un archivo (lógica vieja), le armamos la URL
-    const supabaseUrl = "https://rvmxxlwnrlbbfihhblmy.supabase.co/storage/v1/object/public/product-images/";
+    const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://rvmxxlwnrlbbfihhblmy.supabase.co";
+    const supabaseUrl = `${baseUrl}/storage/v1/object/public/product-images/`;
     return `${supabaseUrl}${path}`;
 }

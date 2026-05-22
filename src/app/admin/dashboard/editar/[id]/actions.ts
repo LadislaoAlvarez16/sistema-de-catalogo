@@ -20,6 +20,18 @@ export async function updateProductAction(productId: string, formData: FormData)
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
     const supabase = await createClient()
 
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('No autorizado')
+
+    const { data: accountData, error: accountError } = await supabase
+        .from('accounts')
+        .select('id')
+        .eq('user_id', user.id)
+        .single()
+
+    if (accountError || !accountData) throw new Error('No se encontró la cuenta del negocio')
+    const accountId = accountData.id
+
     let image_url = currentImageUrl
 
     if (image && image.size > 0) {
@@ -60,6 +72,7 @@ export async function updateProductAction(productId: string, formData: FormData)
             image_url
         })
         .eq('id', productId)
+        .eq('account_id', accountId)
 
     if (error) throw new Error(error.message)
 
