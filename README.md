@@ -1,6 +1,6 @@
-# 🗂️ Sistema de Catálogo — Plataforma SaaS Multinivel
+# 🗂️ TiendaBase — Plataforma SaaS Multinivel
 
-Plataforma SaaS para la gestión y publicación de catálogos digitales de productos, orientada a comercios y negocios que quieren reemplazar los PDFs o listas de WhatsApp por un catálogo profesional, rápido y autogestioable.
+Plataforma SaaS para la gestión y publicación de catálogos digitales de productos, orientada a comercios y negocios que quieren reemplazar los PDFs o listas de WhatsApp por un catálogo profesional, rápido, instalable en celulares y autogestionable.
 
 🔗 **Demo en producción:** [sistema-de-catalogo.vercel.app/almacen-deco](https://sistema-de-catalogo.vercel.app/almacen-deco)
 
@@ -8,45 +8,45 @@ Plataforma SaaS para la gestión y publicación de catálogos digitales de produ
 
 ## ¿Qué problema resuelve?
 
-Muchos negocios pequeños y medianos comparten sus productos por PDF o imágenes de WhatsApp: difícil de actualizar, sin buscador, sin precios claros, mala experiencia para el cliente. Este sistema les da un catálogo web profesional con panel de administración propio, sin depender de un desarrollador para cada cambio.
+Muchos negocios pequeños y medianos comparten sus productos por PDF o imágenes de WhatsApp: difícil de actualizar, sin buscador, sin precios claros, mala experiencia para el cliente. Este sistema les da un catálogo web profesional con panel de administración propio e instalable (PWA), sin depender de un desarrollador para cada cambio.
 
 ---
 
 ## ✨ Funcionalidades principales
 
 ### Panel de Administración (`/admin`)
-- Carga y edición de productos (nombre, imagen, precio, descripción)
-- Gestión de categorías
-- Edición de la descripción e información del negocio
-- Control total sin necesidad de conocimientos técnicos
+- **App Instalable (PWA):** El dueño puede instalar el panel en la pantalla de inicio de su celular para acceso directo.
+- **Autogestión total:** Formulario seguro para editar nombre del negocio, número de WhatsApp y descripción.
+- Carga y edición de productos (con prevención de borrado accidental).
+- Gestión de categorías y links rápidos para compartir el catálogo.
+- Control total sin necesidad de conocimientos técnicos.
 
 ### Catálogo público
-- Visualización de productos con imagen, nombre, precio y descripción
-- Buscador inteligente y ordenamiento (A-Z, por precio)
-- Filtros avanzados por categoría y rango de precio (plan Pro)
-- Modal flotante con detalle del producto
-- Botón de WhatsApp directo con mensaje prearmado por producto
-- Páginas individuales por producto con URL propia (plan Pro)
-- Diseño responsive optimizado para celular y desktop
-- Certificado SSL y hosting seguro
+- Visualización de productos con imagen, nombre, precio y descripción.
+- **Buscador inteligente habilitado para todos los planes.**
+- **Modal flotante con detalle del producto para todos los planes.**
+- **Botón de WhatsApp directo** en la tarjeta con mensaje prearmado por producto para máxima conversión.
+- Filtros avanzados por categoría y rango de precio (plan Pro).
+- Estados vacíos (empty states) amigables y manejo de errores 404 limpio.
+- Diseño responsive optimizado para celular y desktop.
 
 ---
 
-## 💼 Planes disponibles
+## 💼 Planes disponibles (Actualizado)
 
 | Característica | Básico | Medio | Pro |
 |---|:---:|:---:|:---:|
 | Productos visibles | Hasta 30 | Hasta 100 | Hasta 2.000 |
 | Categorías | Hasta 5 | Hasta 10 | Ilimitadas |
 | Dominio propio (.com.ar) | ❌ | ✅ | ✅ |
-| Buscador y ordenamiento | ❌ | ✅ | ✅ |
-| Modal flotante de producto | ❌ | ✅ | ✅ |
+| Buscador y ordenamiento | ✅ | ✅ | ✅ |
+| Modal flotante de producto | ✅ | ✅ | ✅ |
 | Filtros avanzados (precio) | ❌ | ❌ | ✅ |
 | URL individual por producto | ❌ | ❌ | ✅ |
 | SEO básico por producto | ❌ | ❌ | ✅ |
 | Botón WhatsApp por producto | ✅ | ✅ | ✅ |
-| Responsive + SSL | ✅ | ✅ | ✅ |
-| Panel de autogestión `/admin` | ✅ | ✅ | ✅ |
+| Autogestión de Perfil | ✅ | ✅ | ✅ |
+| Panel Instalable (PWA) | ✅ | ✅ | ✅ |
 
 ---
 
@@ -54,37 +54,33 @@ Muchos negocios pequeños y medianos comparten sus productos por PDF o imágenes
 
 | Capa | Tecnología |
 |---|---|
-| Framework | Next.js 14 (App Router) |
+| Framework | Next.js 14+ (App Router) |
 | Lenguaje | TypeScript |
 | Estilos | Tailwind CSS |
 | Base de datos | PostgreSQL |
-| Backend as a Service | Supabase |
+| Backend & Auth | Supabase |
 | Despliegue | Vercel |
 
 ---
 
 ## 🏗️ Arquitectura
 
-```
+```text
 sistema-de-catalogo/
 ├── src/
 │   ├── app/
 │   │   ├── [tienda]/          # Catálogo público por negocio
 │   │   │   └── [producto]/    # Página individual de producto (plan Pro)
-│   │   └── admin/             # Panel de administración protegido
+│   │   └── admin/             # Panel de administración protegido (PWA)
 │   ├── components/            # Componentes reutilizables
-│   └── lib/                   # Configuración de Supabase y utilidades
-├── public/
+│   └── lib/                   # Configuración de Supabase y Server Actions
+├── public/                    # Íconos SVG y Manifest de la PWA
 └── ...configuración Next.js, ESLint, TypeScript
-```
 
----
+🚀 Correr el proyecto localmente
 
-## 🚀 Correr el proyecto localmente
-
-```bash
 # 1. Clonar el repositorio
-git clone https://github.com/LadislaoAlvarez16/sistema-de-catalogo.git
+git clone [https://github.com/LadislaoAlvarez16/sistema-de-catalogo.git](https://github.com/LadislaoAlvarez16/sistema-de-catalogo.git)
 cd sistema-de-catalogo
 
 # 2. Instalar dependencias
@@ -97,26 +93,24 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_clave_anonima
 
 # 4. Correr en modo desarrollo
 npm run dev
-```
 
-Abrí [http://localhost:3000](http://localhost:3000) en el navegador.
+Abrí http://localhost:3000 en el navegador.
 
----
+📌 Características técnicas destacadas
+Seguridad RLS (Row Level Security): Aislamiento total de datos en base de datos. Un tenant jamás puede modificar o borrar datos de otro, incluso interceptando las peticiones.
 
-## 📌 Características técnicas destacadas
+Server Actions Seguras: Toda la mutación de datos valida la sesión nativa por Supabase Auth en el servidor antes de ejecutar.
 
-- **Autenticación y control de acceso por roles** — el panel `/admin` está protegido y solo accesible para el administrador de cada tienda
-- **Arquitectura multitenant** — cada negocio tiene su propia URL (`/nombre-del-local`) y datos aislados
-- **Tipado estricto con TypeScript** — todo el proyecto (~99%) está en TypeScript
-- **Rutas dinámicas** — URLs amigables para tiendas y productos individuales
-- **Optimización SEO** — metadatos dinámicos por producto para posicionamiento en Google (plan Pro)
-- **116+ commits** de desarrollo continuo en producción
+Arquitectura multitenant: Cada negocio tiene su propia URL (/nombre-del-local) y datos aislados.
 
----
+Progressive Web App (PWA): manifest nativo para instalación mobile.
 
-## 👤 Autor
+Tipado estricto con TypeScript.
 
-**Ladislao Alvarez Deagustini**  
-Técnico Universitario en Desarrollo Web — UNER (2025)  
-📧 ladislaoalvarez16@gmail.com  
-🔗 [github.com/LadislaoAlvarez16](https://github.com/LadislaoAlvarez16)
+
+👤 Autor
+Ladislao Alvarez Deagustini Técnico Universitario en Desarrollo Web — UNER (2025)
+
+📧 ladislaoalvarez16@gmail.com
+
+🔗 github.com/LadislaoAlvarez16
