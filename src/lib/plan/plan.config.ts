@@ -4,9 +4,9 @@ export const PLAN_RULES = {
     basic: {
         showPrices: true,
         whatsappCTA: true,
-        productModal: false,
-        modal: false,
-        buscador: false,
+        productModal: true,
+        modal: true,
+        buscador: true,
         productPage: false,
         filters: false,
         advancedFilters: false,

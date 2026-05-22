@@ -37,7 +37,7 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
 
     const rules = getPlanRules(plan);
     const canOpenModal = canUseProductModal(plan);
-    const canUseSearch = plan !== "basic";
+    const canUseSearch = true; // Buscador habilitado para todos
     const canUseSort = plan !== "basic";
 
     const allowedCategories =

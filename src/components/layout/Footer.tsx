@@ -41,10 +41,7 @@ export default function Footer({ accountData, phoneNumber }: Props) {
             <div className="mx-auto flex max-w-5xl flex-col gap-4 text-center text-sm text-gray-500 md:flex-row md:justify-between md:text-left">
                 <p>© 2026 {accountData.name}. Todos los derechos reservados.</p>
                 <p>
-                    Desarrollado por{" "}
-                    <a href="mailto:ladislaoalvarez16@gmail.com" className="text-blue-600 hover:underline">
-                        [ladislaoalvarez16@gmail.com]
-                    </a>
+                    Catálogo creado con <span className="font-semibold text-blue-600">TiendaBase</span>
                 </p>
             </div>
         </footer>
