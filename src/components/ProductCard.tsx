@@ -15,7 +15,8 @@ type Props = {
 export default function ProductCard({ product, plan, phoneNumber, onClick }: Props) {
     const showPrice = canShowPrices(plan);
     const imageSrc = getProductImageUrl(product.image_url);
-    const priceLabel = showPrice && product.price !== null ? `$${product.price}` : "Consultar";
+    const formattedPrice = product.price !== null ? new Intl.NumberFormat('es-AR').format(product.price) : "";
+    const priceLabel = showPrice && product.price !== null ? `$${formattedPrice}` : "Consultar";
 
     const cleanPhone = phoneNumber?.replace(/\D/g, "") ?? "";
     const whatsappHref = cleanPhone
@@ -51,20 +52,20 @@ export default function ProductCard({ product, plan, phoneNumber, onClick }: Pro
                         {product.description || "Descubrí más detalles de este producto en un solo clic."}
                     </p>
 
-                    <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
-                        <span className="text-xl font-bold text-gray-900">{priceLabel}</span>
+                    <div className="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4">
+                        <span className="text-lg sm:text-xl font-bold text-gray-900 self-start">{priceLabel}</span>
 
-                        <div className="flex gap-2">
+                        <div className="flex w-full gap-2 justify-end">
                             {phoneNumber && (
                                 <a
                                     href={whatsappHref}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="flex items-center justify-center rounded-lg bg-green-500 p-2 text-white transition-colors hover:bg-green-600"
+                                    className="flex items-center justify-center rounded-lg bg-green-500 w-10 h-10 text-white transition-colors hover:bg-green-600"
                                     title="Consultar por WhatsApp"
                                 >
-                                    <MessageCircle className="h-4 w-4" />
+                                    <MessageCircle className="h-5 w-5" />
                                 </a>
                             )}
                             <button
@@ -73,10 +74,10 @@ export default function ProductCard({ product, plan, phoneNumber, onClick }: Pro
                                     e.stopPropagation();
                                     onClick?.();
                                 }}
-                                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                                className="flex items-center justify-center rounded-lg bg-blue-600 w-10 h-10 text-white transition-colors hover:bg-blue-700"
+                                title="Ver detalles"
                             >
-                                <Eye className="h-4 w-4" />
-                                <span className="hidden sm:inline">Ver</span>
+                                <Eye className="h-5 w-5" />
                             </button>
                         </div>
                     </div>
