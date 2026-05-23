@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react"
 import { updateAccountSettings } from "./actions"
+import DownloadQRButton from './DownloadQRButton'
 
 type Props = {
     account: {
@@ -54,17 +55,24 @@ export default function ProfileForm({ account }: Props) {
                 <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1.5">
                     Enlace de tu catálogo
                 </label>
-                <input
-                    id="slug"
-                    name="slug"
-                    type="text"
-                    value={slug}
-                    onChange={handleSlugChange}
-                    placeholder="ej-cerrajeria-pepe"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
-                    required
-                />
-                <p className="text-xs text-gray-500 mt-1.5">
+                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                    <input
+                        id="slug"
+                        name="slug"
+                        type="text"
+                        value={slug}
+                        onChange={handleSlugChange}
+                        placeholder="ej-cerrajeria-pepe"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
+                        required
+                    />
+                    {slug && (
+                        <div className="shrink-0">
+                            <DownloadQRButton url={`https://tiendabase.com/${slug}`} />
+                        </div>
+                    )}
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
                     Tu enlace público será: <span className="font-medium text-gray-700">tiendabase.com/{slug || 'tu-slug'}</span>
                 </p>
                 <p className="text-xs text-amber-600 mt-1 font-medium">
