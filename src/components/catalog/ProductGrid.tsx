@@ -95,6 +95,10 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
         setSelectedProduct(product);
     };
 
+    const isFiltering = searchQuery.trim() !== "" || selectedCategory !== "all";
+    const resultCount = searchFiltered.length;
+    const resultText = resultCount === 1 ? "1 producto encontrado" : `${resultCount} productos encontrados`;
+
     return (
         <div className="min-h-screen w-full bg-white font-sans text-gray-900">
             <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
@@ -234,6 +238,12 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
             </section>
 
             <main className="mx-auto w-full max-w-5xl px-4 pb-16">
+
+                {isFiltering && (
+                    <p className="text-sm text-gray-500 font-medium mb-4">
+                        {resultText}
+                    </p>
+                )}
 
                 {products.length === 0 ? (
                     <p className="py-12 text-center text-gray-500">Tu catálogo aún no tiene productos.</p>
