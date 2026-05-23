@@ -24,7 +24,8 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl
   if (
     pathname.startsWith('/admin') &&
-    pathname !== '/admin/login'
+    pathname !== '/admin/login' &&
+    pathname !== '/admin/register'
   ) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {

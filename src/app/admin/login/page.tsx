@@ -2,19 +2,27 @@
 
 import { useActionState } from 'react'
 import { loginAction } from './actions'
+import Link from 'next/link'
 
 export default function LoginPage() {
   const [state, formAction] = useActionState(loginAction, { error: "" })
 
   return (
     <div className="flex flex-col justify-center min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="text-center">
-        <h1 className="text-3xl font-extrabold text-gray-900">
-          Panel de Administración
-        </h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Ingresá a tu cuenta para gestionar tu catálogo
-        </p>
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="text-left mb-6 px-4 sm:px-0">
+          <Link href="/" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+            &larr; Volver al inicio
+          </Link>
+        </div>
+        <div className="text-center">
+          <h1 className="text-3xl font-extrabold text-gray-900">
+            Panel de Administración
+          </h1>
+          <p className="mt-2 text-sm text-gray-600">
+            Ingresá a tu cuenta para gestionar tu catálogo
+          </p>
+        </div>
       </div>
 
       <form
@@ -23,7 +31,7 @@ export default function LoginPage() {
       >
         {state?.error && (
           <div className="mb-6 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-            {state.error}
+            {state.error === "Invalid login credentials" ? "El correo o la contraseña son incorrectos." : state.error}
           </div>
         )}
 
@@ -62,6 +70,15 @@ export default function LoginPage() {
           >
             Iniciar sesión
           </button>
+
+          <div className="mt-6 text-center">
+            <Link
+              href="/admin/register"
+              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              ¿No tenés cuenta? Creá tu catálogo gratis
+            </Link>
+          </div>
         </div>
       </form>
     </div>
