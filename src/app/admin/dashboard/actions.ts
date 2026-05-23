@@ -16,4 +16,21 @@ export async function deleteProductServerAction(productId: string) {
     }
 
     revalidatePath('/admin/dashboard')
+    revalidatePath('/[account]', 'page')
+}
+
+export async function toggleProductVisibilityAction(productId: string, currentStatus: boolean) {
+    const supabase = await createClient()
+
+    const { error } = await supabase
+        .from('products')
+        .update({ active: !currentStatus })
+        .eq('id', productId)
+
+    if (error) {
+        throw new Error(`Error al actualizar estado: ${error.message}`)
+    }
+
+    revalidatePath('/admin/dashboard')
+    revalidatePath('/[account]', 'page')
 }

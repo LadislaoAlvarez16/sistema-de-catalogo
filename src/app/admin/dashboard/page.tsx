@@ -5,12 +5,15 @@ import DeleteProductButton from '@/components/admin/DeleteProductButton'
 import { PLAN_RULES, type Plan } from '@/lib/plan/plan.config'
 import CopyCatalogLink from '@/components/admin/CopyCatalogLink'
 import { ExternalLink } from 'lucide-react'
+import ToggleProductVisibility from '@/components/admin/ToggleProductVisibility'
 
 type Product = {
   id: string
   name: string
   category?: string
   price?: number
+  image_url?: string
+  active?: boolean
 }
 
 export default async function DashboardPage() {
@@ -162,6 +165,7 @@ export default async function DashboardPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Imagen</th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
@@ -170,14 +174,31 @@ export default async function DashboardPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {products.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0">
+                  <tr key={product.id} className={`hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0 ${product.active === false ? 'opacity-60 grayscale' : ''}`}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {product.image_url ? (
+                        <img 
+                          src={product.image_url} 
+                          alt={product.name} 
+                          className="w-10 h-10 object-cover rounded-md border border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-gray-100 rounded-md flex items-center justify-center border border-gray-200">
+                          <span className="text-gray-400 text-xs text-center leading-tight">Sin<br/>img</span>
+                        </div>
+                      )}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">{product.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{product.category || '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {product.price ? `$${product.price}` : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <div className="flex gap-2 justify-end">
+                      <div className="flex gap-2 justify-end items-center">
+                        <ToggleProductVisibility 
+                          productId={product.id} 
+                          initialIsActive={product.active ?? true} 
+                        />
                         <Link
                           href={`/admin/dashboard/editar/${product.id}`}
                           className="text-blue-600 hover:text-blue-900 font-medium bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors"
