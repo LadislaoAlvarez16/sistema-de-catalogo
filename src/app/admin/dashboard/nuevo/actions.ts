@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { PLAN_RULES, type Plan } from '@/lib/plan/plan.config'
+import { generateUniqueSlug } from '@/utils/slug'
 
 export async function createProductAction(prevState: unknown, formData: FormData) {
     const name = formData.get('name') as string
@@ -20,14 +21,7 @@ export async function createProductAction(prevState: unknown, formData: FormData
         return { error: 'Faltan campos obligatorios' }
     }
 
-    // Generar slug base a partir del nombre
-    const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
 
-    // Generar una cadena alfanumérica aleatoria corta (5 caracteres)
-    const randomSuffix = Math.random().toString(36).substring(2, 7)
-
-    // Concatenar el slug base con el sufijo aleatorio
-    const slug = `${baseSlug}-${randomSuffix}`
 
     const supabase = await createClient()
 
@@ -81,6 +75,8 @@ export async function createProductAction(prevState: unknown, formData: FormData
 
         image_url = publicUrlData.publicUrl
     }
+
+    const slug = await generateUniqueSlug(name, accountData.id, supabase)
 
     // Guardar en la tabla products
     const { error: insertError } = await supabase

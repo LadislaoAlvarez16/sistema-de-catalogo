@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { generateUniqueSlug } from '@/utils/slug'
 
 export async function updateProductAction(productId: string, formData: FormData) {
     const name = formData.get('name') as string
@@ -17,7 +18,6 @@ export async function updateProductAction(productId: string, formData: FormData)
         throw new Error('Faltan campos obligatorios')
     }
 
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -31,6 +31,8 @@ export async function updateProductAction(productId: string, formData: FormData)
 
     if (accountError || !accountData) throw new Error('No se encontró la cuenta del negocio')
     const accountId = accountData.id
+
+    const slug = await generateUniqueSlug(name, accountId, supabase, productId)
 
     let image_url = currentImageUrl
 
