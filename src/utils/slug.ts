@@ -31,25 +31,20 @@ export async function generateUniqueSlug(
 
         let query = supabase
             .from('products')
-            .select('id', { count: 'exact', head: true })
-            .eq('account_id', accountId)
+            .select('slug')
             .eq('slug', slug)
         
         if (currentProductId && typeof currentProductId === 'string' && currentProductId.trim() !== '') {
             query = query.neq('id', currentProductId.trim())
         }
 
-        const { count, error } = await query
+        const { data, error } = await query
 
         if (error) {
             throw new Error(`Error verificando unicidad del slug: ${error.message}`)
         }
 
-        if (count === null) {
-            throw new Error('Error verificando unicidad del slug: count es null')
-        }
-
-        if (count === 0) {
+        if (data && data.length === 0) {
             isUnique = true
         } else {
             slug = `${baseSlug}-${counter}`
