@@ -24,19 +24,24 @@ export async function generateUniqueSlug(
     let isUnique = false
 
     while (!isUnique) {
+        if (counter > 20) {
+            slug = `${baseSlug}-${Math.random().toString(36).substring(2, 6)}`
+            break
+        }
+
         let query = supabase
             .from('products')
-            .select('id')
+            .select('id', { count: 'exact', head: true })
             .eq('account_id', accountId)
             .eq('slug', slug)
         
-        if (currentProductId) {
-            query = query.neq('id', currentProductId)
+        if (currentProductId && typeof currentProductId === 'string' && currentProductId.trim() !== '') {
+            query = query.neq('id', currentProductId.trim())
         }
 
-        const { data } = await query.maybeSingle()
+        const { count, error } = await query
 
-        if (!data) {
+        if (error || count === null || count === 0) {
             isUnique = true
         } else {
             slug = `${baseSlug}-${counter}`
