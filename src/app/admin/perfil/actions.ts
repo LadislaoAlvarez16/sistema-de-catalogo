@@ -22,12 +22,16 @@ export async function updateAccountSettings(prevState: any, formData: FormData) 
     }
 
     const name = formData.get("name") as string
+    const slug = formData.get("slug") as string
     const description = formData.get("description") as string
     const whatsapp = formData.get("whatsapp") as string
 
+    // Limpieza final de slug en el backend por seguridad
+    const cleanSlug = slug?.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-')
+
     const { error } = await supabase
         .from('accounts')
-        .update({ name, description, whatsapp })
+        .update({ name, slug: cleanSlug, description, whatsapp })
         .eq('id', account.id)
 
     if (error) {

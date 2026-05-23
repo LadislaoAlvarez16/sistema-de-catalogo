@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState } from "react"
+import { useActionState, useState } from "react"
 import { updateAccountSettings } from "./actions"
 
 type Props = {
@@ -8,11 +8,20 @@ type Props = {
         name: string
         description: string | null
         whatsapp: string | null
+        slug: string | null
     }
 }
 
 export default function ProfileForm({ account }: Props) {
     const [state, formAction, isPending] = useActionState(updateAccountSettings, null)
+    const [slug, setSlug] = useState(account?.slug || "")
+
+    const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value
+        // Convierte a minúsculas, quita caracteres especiales dejando guiones y letras/números
+        const formatted = val.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-')
+        setSlug(formatted)
+    }
 
     return (
         <form action={formAction} className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-200 space-y-6">
@@ -39,6 +48,28 @@ export default function ProfileForm({ account }: Props) {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
                     required
                 />
+            </div>
+
+            <div>
+                <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Enlace de tu catálogo
+                </label>
+                <input
+                    id="slug"
+                    name="slug"
+                    type="text"
+                    value={slug}
+                    onChange={handleSlugChange}
+                    placeholder="ej-cerrajeria-pepe"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
+                    required
+                />
+                <p className="text-xs text-gray-500 mt-1.5">
+                    Tu enlace público será: <span className="font-medium text-gray-700">tiendabase.com/{slug || 'tu-slug'}</span>
+                </p>
+                <p className="text-xs text-amber-600 mt-1 font-medium">
+                    Nota: Si cambias este enlace, los links anteriores que hayas compartido dejarán de funcionar.
+                </p>
             </div>
 
             <div>
