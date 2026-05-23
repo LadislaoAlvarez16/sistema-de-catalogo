@@ -13,9 +13,9 @@ export function slugify(text: string): string {
 }
 
 export async function generateUniqueSlug(
+    supabase: SupabaseClient<any, "public", any>,
     name: string,
     accountId: string,
-    supabase: SupabaseClient<any, "public", any>,
     currentProductId?: string
 ): Promise<string> {
     const baseSlug = slugify(name)
@@ -41,7 +41,15 @@ export async function generateUniqueSlug(
 
         const { count, error } = await query
 
-        if (error || count === null || count === 0) {
+        if (error) {
+            throw new Error(`Error verificando unicidad del slug: ${error.message}`)
+        }
+
+        if (count === null) {
+            throw new Error('Error verificando unicidad del slug: count es null')
+        }
+
+        if (count === 0) {
             isUnique = true
         } else {
             slug = `${baseSlug}-${counter}`

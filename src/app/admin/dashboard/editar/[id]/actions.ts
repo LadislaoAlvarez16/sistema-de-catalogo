@@ -32,7 +32,7 @@ export async function updateProductAction(productId: string, formData: FormData)
     if (accountError || !accountData) throw new Error('No se encontró la cuenta del negocio')
     const accountId = accountData.id
 
-    const slug = await generateUniqueSlug(name, accountId, supabase, productId)
+    const slug = await generateUniqueSlug(supabase, name, accountId, productId)
 
     let image_url = currentImageUrl
 

@@ -76,7 +76,7 @@ export async function createProductAction(prevState: unknown, formData: FormData
         image_url = publicUrlData.publicUrl
     }
 
-    const slug = await generateUniqueSlug(name, accountData.id, supabase)
+    const slug = await generateUniqueSlug(supabase, name, accountData.id)
 
     // Guardar en la tabla products
     const { error: insertError } = await supabase
