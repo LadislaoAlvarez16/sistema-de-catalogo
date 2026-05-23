@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import type { Plan } from "@/lib/plan/plan.config";
 import { Metadata } from 'next';
+import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
 
 export const dynamic = 'force-dynamic'; // Esto le dice a Next que NO cachee esta página, y que la ejecute SIEMPRE en el servidor. Es importante para que los cambios en Supabase se reflejen al instante sin tener que esperar a la revalidación de la caché.
 type PageProps = {
@@ -37,6 +38,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const title = `${accountData.name} | Catálogo Online`;
     const description = accountData.description || `Explora el catálogo de productos de ${accountData.name}.`;
 
+    const supabase = await createPublicClient();
+    const { data: firstProduct } = await supabase
+        .from("products")
+        .select("image_url")
+        .eq("account_id", accountData.id)
+        .eq("active", true)
+        .limit(1)
+        .maybeSingle();
+
+    const openGraphImages = [];
+    if (firstProduct?.image_url) {
+        openGraphImages.push({
+            url: getProductImageUrl(firstProduct.image_url),
+            alt: `Imagen de catálogo de ${accountData.name}`,
+        });
+    }
+
     return {
         title: title,
         description: description,
@@ -45,11 +63,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             description: description,
             type: 'website',
             siteName: accountData.name,
+            images: openGraphImages,
         },
         twitter: {
             card: 'summary_large_image',
             title: title,
             description: description,
+            images: openGraphImages.map(img => img.url),
         }
     };
 }
@@ -107,8 +127,21 @@ export default async function PublicPage({ params }: PageProps) {
         notFound();
     }
 
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": accountData.name,
+        "telephone": config.whatsapp || undefined,
+        "url": `${baseUrl}/${accountSlug}`
+    };
+
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <ProductGrid
                 products={products || []}
                 plan={config.plan as Plan}

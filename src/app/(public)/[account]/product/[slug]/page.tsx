@@ -105,8 +105,28 @@ export default async function ProductPage({ params }: ProductPageProps) {
         ? `Hola, me interesa el producto: *${product.name}* que está a *$${product.price}*. ¿Tienen stock?`
         : `Hola, me interesa el producto: *${product.name}*. ¿Me podrían dar más información?`;
 
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.name,
+        "description": product.description || undefined,
+        "image": getProductImageUrl(product.image_url),
+        "offers": {
+            "@type": "Offer",
+            "price": product.price,
+            "priceCurrency": "ARS",
+            "availability": "https://schema.org/InStock",
+            "url": `${baseUrl}/${account}/product/${slug}`
+        }
+    };
+
     return (
         <main className="min-h-screen bg-white">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
                 <Link
                     href={`/${account}`}
