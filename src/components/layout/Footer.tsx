@@ -1,6 +1,7 @@
 "use client";
 
 import { MessageCircle } from "lucide-react";
+import Link from "next/link";
 
 type Props = {
     accountData: { name: string; description: string | null };
@@ -18,9 +19,11 @@ export default function Footer({ accountData, phoneNumber }: Props) {
             <div className="mx-auto max-w-5xl flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
                 <div className="text-center md:text-left">
                     <h3 className="text-xl font-bold text-gray-900">{accountData.name}</h3>
-                    <p className="mt-2 max-w-xs text-sm text-gray-500">
-                        Gracias por visitar nuestro catálogo online. Contáctanos para más información.
-                    </p>
+                    {accountData.description && (
+                        <p className="mt-2 max-w-xs text-sm text-gray-500">
+                            {accountData.description}
+                        </p>
+                    )}
                 </div>
 
                 {phoneNumber && (
@@ -41,7 +44,10 @@ export default function Footer({ accountData, phoneNumber }: Props) {
             <div className="mx-auto flex max-w-5xl flex-col gap-4 text-center text-sm text-gray-500 md:flex-row md:justify-between md:text-left">
                 <p>© 2026 {accountData.name}. Todos los derechos reservados.</p>
                 <p>
-                    Catálogo creado con <span className="font-semibold text-blue-600">TiendaBase</span>
+                    Catálogo creado con{" "}
+                    <Link href="/" className="font-semibold text-blue-600 hover:underline transition-colors">
+                        TiendaBase
+                    </Link>
                 </p>
             </div>
         </footer>
