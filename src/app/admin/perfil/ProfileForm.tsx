@@ -68,7 +68,7 @@ export default function ProfileForm({ account }: Props) {
                     />
                     {slug && (
                         <div className="shrink-0">
-                            <DownloadQRButton url={`https://tiendabase.com/${slug}`} />
+                            <DownloadQRButton slug={slug} />
                         </div>
                     )}
                 </div>
