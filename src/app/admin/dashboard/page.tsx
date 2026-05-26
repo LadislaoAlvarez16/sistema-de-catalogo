@@ -7,6 +7,7 @@ import { PLAN_RULES, type Plan } from '@/lib/plan/plan.config'
 import CopyCatalogLink from '@/components/admin/CopyCatalogLink'
 import { ExternalLink } from 'lucide-react'
 import ToggleProductVisibility from '@/components/admin/ToggleProductVisibility'
+import LogoutButton from '@/components/admin/LogoutButton'
 
 type Product = {
   id: string
@@ -110,6 +111,9 @@ export default async function DashboardPage() {
             >
               Categorías
             </Link>
+
+            {/* Componente cliente para cerrar sesión que maneja los errores devueltos por la Server Action */}
+            <LogoutButton />
 
             {isProductLimitReached ? (
               <button
