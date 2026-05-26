@@ -1,6 +1,7 @@
 "use client"
 
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 
 interface Categoria {
     id: string;
@@ -25,6 +26,38 @@ export default function FormEditarProducto({
     categorias: Categoria[],
     action: (payload: FormData) => void
 }) {
+    const [fileName, setFileName] = useState<string | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    // Limpieza de memoria (evitar memory leaks con URL.createObjectURL)
+    useEffect(() => {
+        return () => {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        
+        // Liberamos la URL anterior si el usuario selecciona otro archivo
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+
+        if (file) {
+            setFileName(file.name);
+            setPreviewUrl(URL.createObjectURL(file));
+        } else {
+            setFileName(null);
+            setPreviewUrl(null);
+        }
+    };
+
+    // La imagen a mostrar es la previsualización local, o si no hay, la imagen actual del producto
+    const currentDisplayImage = previewUrl || product.image_url;
+
     return (
         <form action={action} className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-5">
             <input type="hidden" name="current_image_url" value={product.image_url || ''} />
@@ -67,12 +100,20 @@ export default function FormEditarProducto({
             </div>
 
             <div>
-                <label htmlFor="image" className="block text-sm font-semibold text-gray-800 mb-1">Nueva Imagen (Opcional)</label>
-                {product.image_url && <p className="text-xs text-gray-500 mb-2">Este producto ya tiene una foto. Subí un archivo nuevo solo si querés reemplazarla.</p>}
-                <label htmlFor="image" className="block border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer text-gray-600">
-                    Haz clic para seleccionar una imagen
+                <label htmlFor="image" className="block text-sm font-semibold text-gray-800 mb-1">Imagen del Producto</label>
+                {product.image_url && !previewUrl && <p className="text-xs text-gray-500 mb-2">Este producto ya tiene una foto. Subí un archivo nuevo solo si querés reemplazarla.</p>}
+                <label htmlFor="image" className="block border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer text-gray-600 overflow-hidden relative">
+                    {currentDisplayImage ? (
+                        <div className="flex flex-col items-center gap-2">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={currentDisplayImage} alt="Previsualización" className="h-32 object-contain rounded-md" />
+                            <span className="text-sm font-medium">{fileName ? `Cambiar imagen (${fileName})` : "Cambiar imagen"}</span>
+                        </div>
+                    ) : (
+                        <span>Haz clic para seleccionar una imagen</span>
+                    )}
                 </label>
-                <input type="file" id="image" name="image" accept="image/*" className="hidden" />
+                <input type="file" id="image" name="image" accept="image/*" className="hidden" onChange={handleFileChange} />
             </div>
 
             <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">

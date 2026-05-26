@@ -1,7 +1,7 @@
 "use client"
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createCategoryFastAction } from './actions'
 
 interface Categoria {
@@ -19,6 +19,16 @@ export default function FormNuevoProducto({
     state: { error: string }
 }) {
     const [fileName, setFileName] = useState<string | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    
+    // Limpieza de memoria (evitar memory leaks con URL.createObjectURL)
+    useEffect(() => {
+        return () => {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
     
     // Estados para la nueva categoría
     const [localCategorias, setLocalCategorias] = useState(categorias);
@@ -29,10 +39,18 @@ export default function FormNuevoProducto({
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+        
+        // Liberamos la URL anterior si el usuario selecciona otro archivo antes de enviar
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
+
         if (file) {
             setFileName(file.name);
+            setPreviewUrl(URL.createObjectURL(file));
         } else {
             setFileName(null);
+            setPreviewUrl(null);
         }
     };
 
@@ -115,8 +133,16 @@ export default function FormNuevoProducto({
 
                 <div>
                     <label htmlFor="image" className="block text-sm font-semibold text-gray-800 mb-1">Imagen</label>
-                    <label htmlFor="image" className="block border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer text-gray-600">
-                        {fileName ? `Archivo seleccionado: ${fileName}` : "Haz clic para seleccionar una imagen"}
+                    <label htmlFor="image" className="block border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors cursor-pointer text-gray-600 overflow-hidden relative">
+                        {previewUrl ? (
+                            <div className="flex flex-col items-center gap-2">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={previewUrl} alt="Previsualización" className="h-32 object-contain rounded-md" />
+                                <span className="text-sm font-medium">Cambiar imagen ({fileName})</span>
+                            </div>
+                        ) : (
+                            <span>Haz clic para seleccionar una imagen</span>
+                        )}
                     </label>
                     <input type="file" id="image" name="image" accept="image/*" className="hidden" onChange={handleFileChange} />
                 </div>
