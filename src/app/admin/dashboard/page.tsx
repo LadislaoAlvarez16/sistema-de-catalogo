@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import DeleteProductButton from '@/components/admin/DeleteProductButton'
 import { PLAN_RULES, type Plan } from '@/lib/plan/plan.config'
 import CopyCatalogLink from '@/components/admin/CopyCatalogLink'
@@ -12,7 +13,7 @@ type Product = {
   name: string
   category?: string
   price?: number
-  image_url?: string
+  image_url?: string | null
   active?: boolean
 }
 
@@ -35,16 +36,23 @@ export default async function DashboardPage() {
 
   let products: Product[] = []
   let categoryCount = 0 //Variable para guardar cuántas categorías tiene
+  let fetchError: string | null = null
 
   if (account && account.id) {
     // Buscar productos de la cuenta
-    const { data: productsData } = await supabase
+    // Optimizamos el payload seleccionando solo campos requeridos para la tabla (incluyendo imagen)
+    const { data: productsData, error } = await supabase
       .from('products')
-      .select('*')
+      .select('id, name, category, price, active, image_url')
       .eq('account_id', account.id)
       .order('created_at', { ascending: false })
 
-    products = productsData || []
+    if (error) {
+      console.error('Error fetching products:', error)
+      fetchError = 'Ocurrió un error al cargar los productos.'
+    } else {
+      products = productsData || []
+    }
 
     // Le pedimos a Supabase que solo cuente las categorías (súper rápido)
     const { count } = await supabase
@@ -160,7 +168,11 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {products.length > 0 ? (
+        {fetchError ? (
+          <div className="mt-8 text-center bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+            <p className="text-red-600 font-medium">{fetchError}</p>
+          </div>
+        ) : products.length > 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50 border-b border-gray-200">
@@ -177,9 +189,11 @@ export default async function DashboardPage() {
                   <tr key={product.id} className={`hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0 ${product.active === false ? 'opacity-60 grayscale' : ''}`}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {product.image_url ? (
-                        <img 
+                        <Image 
                           src={product.image_url} 
-                          alt={product.name} 
+                          alt={product.name}
+                          width={40}
+                          height={40}
                           className="w-10 h-10 object-cover rounded-md border border-gray-200"
                         />
                       ) : (
