@@ -49,10 +49,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     const openGraphImages = [];
     if (firstProduct?.image_url) {
-        openGraphImages.push({
-            url: getProductImageUrl(firstProduct.image_url),
-            alt: `Imagen de catálogo de ${accountData.name}`,
-        });
+        const url = getProductImageUrl(firstProduct.image_url);
+        if (url) {
+            openGraphImages.push({
+                url,
+                alt: `Imagen de catálogo de ${accountData.name}`,
+            });
+        }
     }
 
     return {

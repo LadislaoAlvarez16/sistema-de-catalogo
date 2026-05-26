@@ -3,15 +3,20 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ZoomIn, X } from "lucide-react";
+import ImagePlaceholder from "./ImagePlaceholder";
 
 type Props = {
-    src: string;
+    src?: string | null;
     alt: string;
     className?: string;
 };
 
 export default function InteractiveImageWithZoom({ src, alt, className }: Props) {
     const [isOpen, setIsOpen] = useState(false);
+
+    if (!src) {
+        return <ImagePlaceholder className={`rounded-2xl ${className || ""}`} text="Sin imagen" />;
+    }
 
     return (
         <>

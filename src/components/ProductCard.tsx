@@ -4,6 +4,7 @@ import { canShowPrices } from "@/lib/plan/plan.helpers";
 import type { Plan } from "@/lib/plan/plan.config";
 import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
 import type { Product } from "@/types/product";
+import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 
 type Props = {
     product: Product;
@@ -29,13 +30,17 @@ export default function ProductCard({ product, plan, phoneNumber, onClick }: Pro
             className={`flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md ${onClick ? "cursor-pointer" : ""}`}
         >
             <div className="relative h-48 w-full bg-gray-100">
-                <Image
-                    src={imageSrc}
-                    alt={product.name}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover"
-                />
+                {imageSrc ? (
+                    <Image
+                        src={imageSrc}
+                        alt={product.name}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        className="object-cover"
+                    />
+                ) : (
+                    <ImagePlaceholder className="h-full w-full" />
+                )}
             </div>
 
             <div className="flex grow flex-col p-5">

@@ -73,17 +73,11 @@ export default function ProductModal({ product, plan, phoneNumber, onClose }: Pr
                 </div>
 
                 <div className="custom-scrollbar flex-1 overflow-y-auto p-6 md:p-8">
-                    {imageSrc ? (
-                        <InteractiveImageWithZoom
-                            src={imageSrc}
-                            alt={product.name}
-                            className="mb-6 h-64 w-full rounded-2xl bg-gray-100 md:h-80"
-                        />
-                    ) : (
-                        <div className="mb-6 flex h-64 w-full items-center justify-center rounded-2xl bg-gray-100 text-gray-500 md:h-80">
-                            Sin imagen
-                        </div>
-                    )}
+                    <InteractiveImageWithZoom
+                        src={imageSrc}
+                        alt={product.name}
+                        className="mb-6 h-64 w-full rounded-2xl bg-gray-100 md:h-80"
+                    />
 
                     <p className="mb-6 text-base leading-relaxed text-gray-600">
                         {product.description || "Consultanos por este producto y te compartimos más información."}

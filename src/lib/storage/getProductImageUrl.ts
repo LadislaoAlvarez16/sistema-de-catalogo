@@ -1,6 +1,6 @@
-export function getProductImageUrl(path: string | null | undefined): string {
-    // 1. Si no hay imagen, devolvemos el placeholder
-    if (!path) return "/placeholder.png";
+export function getProductImageUrl(path: string | null | undefined): string | null {
+    // 1. Si no hay imagen, devolvemos null (el frontend manejará el fallback visual)
+    if (!path) return null;
 
     // 2. Si ya es una URL completa (empieza con http), la devolvemos tal cual
     if (path.startsWith("http")) {
