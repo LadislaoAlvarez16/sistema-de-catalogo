@@ -1,4 +1,4 @@
-export type Plan = "basic" | "medium" | "pro";
+export type Plan = "basic" | "pro";
 
 export const PLAN_RULES = {
     basic: {
@@ -10,20 +10,8 @@ export const PLAN_RULES = {
         productPage: false,
         filters: false,
         advancedFilters: false,
-        productLimit: Infinity, // ilimitados
-        categoryLimit: 5,
-    },
-    medium: {
-        showPrices: true,
-        whatsappCTA: true,
-        productModal: true,
-        modal: true,
-        buscador: true,
-        productPage: false,
-        filters: false,
-        advancedFilters: false,
-        productLimit: 100,
-        categoryLimit: 10,
+        productLimit: Infinity,
+        categoryLimit: Infinity,
     },
     pro: {
         showPrices: true,
@@ -34,7 +22,7 @@ export const PLAN_RULES = {
         productPage: true,
         filters: true,
         advancedFilters: true,
-        productLimit: 2000,    // Límite técnico de seguridad
-        categoryLimit: 100,    // Límite técnico de seguridad
+        productLimit: Infinity,
+        categoryLimit: Infinity,
     },
 } as const;

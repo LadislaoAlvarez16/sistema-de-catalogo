@@ -126,20 +126,20 @@ export default function Home() {
         <div className="max-w-5xl mx-auto space-y-16">
           <div className="text-center max-w-2xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Planes simples y transparentes</h2>
-            <p className="mt-4 text-xl text-gray-500">Crecemos con tu negocio. Sin comisiones por venta.</p>
+            <p className="mt-4 text-xl text-gray-500">Empezá gratis. Pasate a Pro cuando quieras aparecer en Google.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
-            {/* Básico */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
+            {/* Gratis */}
             <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-200 shadow-sm flex flex-col">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Plan Básico</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Plan Gratis</h3>
               <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-4xl md:text-5xl font-extrabold text-gray-900">Gratis</span>
+                <span className="text-4xl md:text-5xl font-extrabold text-gray-900">$0</span>
               </div>
               <ul className="space-y-4 mb-8 flex-1">
                 <li className="flex items-start gap-3 text-gray-600">
                   <Check className="w-6 h-6 text-green-500 shrink-0" />
-                  <span>Hasta 30 productos y 5 categorías</span>
+                  <span>Productos y categorías ilimitados</span>
                 </li>
                 <li className="flex items-start gap-3 text-gray-600">
                   <Check className="w-6 h-6 text-green-500 shrink-0" />
@@ -153,41 +153,16 @@ export default function Home() {
                   <Check className="w-6 h-6 text-green-500 shrink-0" />
                   <span>Panel autogestionable (PWA)</span>
                 </li>
+                <li className="flex items-start gap-3 text-gray-600">
+                  <Check className="w-6 h-6 text-green-500 shrink-0" />
+                  <span>Link compartible del catálogo</span>
+                </li>
               </ul>
               <Link
                 href="/admin/register"
                 className="w-full py-4 px-6 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-2xl font-semibold text-center transition-colors mt-auto"
               >
                 Empezar gratis
-              </Link>
-            </div>
-
-            {/* Medio */}
-            <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-200 shadow-sm flex flex-col">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Plan Medio</h3>
-              <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-4xl md:text-5xl font-extrabold text-gray-900">$X</span>
-                <span className="text-gray-500 font-medium">/mes</span>
-              </div>
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3 text-gray-600">
-                  <Check className="w-6 h-6 text-green-500 shrink-0" />
-                  <span>Hasta 100 productos y 10 categorías</span>
-                </li>
-                <li className="flex items-start gap-3 text-gray-600">
-                  <Check className="w-6 h-6 text-green-500 shrink-0" />
-                  <span>Dominio propio (.com.ar)</span>
-                </li>
-                <li className="flex items-start gap-3 text-gray-600">
-                  <Check className="w-6 h-6 text-green-500 shrink-0" />
-                  <span className="font-medium text-gray-900">Todo lo del plan Básico</span>
-                </li>
-              </ul>
-              <Link
-                href="/admin/register"
-                className="w-full py-4 px-6 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-2xl font-semibold text-center transition-colors mt-auto"
-              >
-                Elegir Medio
               </Link>
             </div>
 
@@ -200,13 +175,17 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold text-white mb-2">Plan Pro</h3>
               <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-4xl md:text-5xl font-extrabold text-white">$Y</span>
+                <span className="text-4xl md:text-5xl font-extrabold text-white">ARG $17.000</span>
                 <span className="text-gray-400 font-medium">/mes</span>
               </div>
               <ul className="space-y-4 mb-8 flex-1">
                 <li className="flex items-start gap-3 text-gray-300">
                   <Check className="w-6 h-6 text-blue-400 shrink-0" />
-                  <span className="text-white font-medium">Hasta 2.000 productos y categorías ilimitadas</span>
+                  <span className="text-white font-medium">Todo lo del plan Gratis</span>
+                </li>
+                <li className="flex items-start gap-3 text-gray-300">
+                  <Check className="w-6 h-6 text-blue-400 shrink-0" />
+                  <span>Dominio propio (.com.ar)</span>
                 </li>
                 <li className="flex items-start gap-3 text-gray-300">
                   <Check className="w-6 h-6 text-blue-400 shrink-0" />
@@ -215,10 +194,6 @@ export default function Home() {
                 <li className="flex items-start gap-3 text-gray-300">
                   <Check className="w-6 h-6 text-blue-400 shrink-0" />
                   <span>URLs individuales por producto (SEO en Google)</span>
-                </li>
-                <li className="flex items-start gap-3 text-gray-300">
-                  <Check className="w-6 h-6 text-blue-400 shrink-0" />
-                  <span className="font-medium text-white">Todo lo del plan Medio</span>
                 </li>
               </ul>
               <Link
