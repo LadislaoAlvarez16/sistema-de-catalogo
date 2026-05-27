@@ -8,6 +8,7 @@ import CopyCatalogLink from '@/components/admin/CopyCatalogLink'
 import { ExternalLink } from 'lucide-react'
 import ToggleProductVisibility from '@/components/admin/ToggleProductVisibility'
 import LogoutButton from '@/components/admin/LogoutButton'
+import OnboardingFlow from '@/components/admin/OnboardingFlow'
 
 type Product = {
   id: string
@@ -36,6 +37,7 @@ export default async function DashboardPage() {
     .single()
 
   let products: Product[] = []
+  let totalProductCount = 0 // Variable para guardar el total real de productos
   let categoryCount = 0 //Variable para guardar cuántas categorías tiene
   let fetchError: string | null = null
 
@@ -47,6 +49,7 @@ export default async function DashboardPage() {
       .select('id, name, category, price, active, image_url')
       .eq('account_id', account.id)
       .order('created_at', { ascending: false })
+      .limit(50)
 
     if (error) {
       console.error('Error fetching products:', error)
@@ -54,6 +57,14 @@ export default async function DashboardPage() {
     } else {
       products = productsData || []
     }
+
+    // Le pedimos a Supabase que solo cuente los productos (súper rápido)
+    const { count: pCount } = await supabase
+      .from('products')
+      .select('id', { count: 'exact', head: true })
+      .eq('account_id', account.id)
+
+    totalProductCount = pCount || 0
 
     // Le pedimos a Supabase que solo cuente las categorías (súper rápido)
     const { count } = await supabase
@@ -68,11 +79,10 @@ export default async function DashboardPage() {
   const currentPlan = (account?.plan as Plan) || 'basic' // Si no tiene, asume basic
   const limits = PLAN_RULES[currentPlan]
 
-  const productCount = products.length
-  const isProductLimitReached = productCount >= limits.productLimit
+  const isProductLimitReached = totalProductCount >= limits.productLimit
 
   // Calculamos porcentajes para las barritas visuales
-  const productPercentage = Math.min((productCount / limits.productLimit) * 100, 100)
+  const productPercentage = Math.min((totalProductCount / limits.productLimit) * 100, 100)
   const categoryPercentage = Math.min((categoryCount / limits.categoryLimit) * 100, 100)
 
   // Si llega al 90%, pintamos la barra de naranja/rojo para alertar
@@ -145,7 +155,7 @@ export default async function DashboardPage() {
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Productos</h3>
             <div className="flex justify-between items-end">
-              <span className="text-3xl font-extrabold text-gray-900">{productCount}</span>
+              <span className="text-3xl font-extrabold text-gray-900">{totalProductCount}</span>
               <span className="text-sm text-gray-500">
                 / {limits.productLimit >= 2000 ? 'Ilimitado' : limits.productLimit}
               </span>
@@ -176,7 +186,7 @@ export default async function DashboardPage() {
           <div className="mt-8 text-center bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
             <p className="text-red-600 font-medium">{fetchError}</p>
           </div>
-        ) : products.length > 0 ? (
+        ) : totalProductCount > 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50 border-b border-gray-200">
@@ -232,12 +242,7 @@ export default async function DashboardPage() {
             </table>
           </div>
         ) : (
-          <div className="mt-8 text-center bg-gray-50 border border-dashed border-gray-300 rounded-lg p-12">
-            <p className="text-gray-600 text-lg">Aún no tenés productos en tu catálogo.</p>
-            {!isProductLimitReached && (
-              <p className="text-gray-500 text-sm mt-2">Hacé clic en &quot;+ Agregar producto&quot; para empezar a vender.</p>
-            )}
-          </div>
+          <OnboardingFlow slug={account?.slug} />
         )}
       </div>
     </div>
