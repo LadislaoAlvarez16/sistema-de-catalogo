@@ -196,12 +196,14 @@ export default function Home() {
                   <span>URLs individuales por producto (SEO en Google)</span>
                 </li>
               </ul>
-              <Link
-                href="/admin/register"
-                className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-semibold text-center transition-colors mt-auto"
+              <a
+                href="https://wa.me/5493454190771?text=Hola%2C%20quiero%20activar%20el%20plan%20Pro%20de%20TiendaBase"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-semibold text-center transition-colors mt-auto block"
               >
                 Subir de nivel
-              </Link>
+              </a>
             </div>
           </div>
         </div>
