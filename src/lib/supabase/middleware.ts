@@ -2,37 +2,35 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 export async function updateSession(request: NextRequest) {
-  const response = NextResponse.next()
+  let supabaseResponse = NextResponse.next({
+    request,
+  })
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
+        getAll() {
+          return request.cookies.getAll()
         },
-        set(name: string, value: string, options) {
-          response.cookies.set({ name, value, ...options })
-        },
-        remove(name: string, options) {
-          response.cookies.set({ name, value: '', ...options })
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          supabaseResponse = NextResponse.next({
+            request,
+          })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
         },
       },
     }
   )
 
-  const { pathname } = request.nextUrl
-  if (
-    pathname.startsWith('/admin') &&
-    pathname !== '/admin/login' &&
-    pathname !== '/admin/register'
-  ) {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      const loginUrl = new URL('/admin/login', request.url)
-      return NextResponse.redirect(loginUrl)
-    }
-  }
+  // Esto refrescará la sesión si el token expiró y establecerá las nuevas cookies
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  return response
+  return { supabaseResponse, user }
 }
