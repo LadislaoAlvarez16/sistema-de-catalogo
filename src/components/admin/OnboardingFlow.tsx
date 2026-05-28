@@ -6,13 +6,14 @@ import { Plus, Copy, Check, MessageCircle, ArrowRight } from 'lucide-react'
 
 interface OnboardingFlowProps {
   slug: string | null | undefined
+  productosCount: number
 }
 
 const emptySubscribe = () => () => {}
 const getClientOrigin = () => window.location.origin
 const getServerOrigin = () => ''
 
-export default function OnboardingFlow({ slug }: OnboardingFlowProps) {
+export default function OnboardingFlow({ slug, productosCount }: OnboardingFlowProps) {
   const [copied, setCopied] = useState(false)
   
   const origin = useSyncExternalStore(emptySubscribe, getClientOrigin, getServerOrigin)
@@ -51,7 +52,7 @@ export default function OnboardingFlow({ slug }: OnboardingFlowProps) {
         <p className="text-gray-600 text-lg">Seguí estos 3 simples pasos para empezar a recibir pedidos.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative">
         {/* Paso 1: Agregar producto */}
         <div className="flex flex-col items-center text-center p-6 bg-white rounded-xl border border-gray-200 shadow-sm relative z-10">
           <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xl mb-5 shadow-inner">1</div>
@@ -66,20 +67,20 @@ export default function OnboardingFlow({ slug }: OnboardingFlowProps) {
         </div>
 
         {/* Flecha conectora 1 (desktop) */}
-        <div className="hidden md:flex absolute top-1/2 left-1/3 -translate-y-1/2 -translate-x-1/2 text-gray-300 z-0">
+        <div className="hidden lg:flex absolute top-1/2 left-[33.33%] -translate-y-1/2 -translate-x-1/2 text-gray-300 z-0">
           <ArrowRight className="w-8 h-8" />
         </div>
 
         {/* Paso 2: Copiar link */}
-        <div className="flex flex-col items-center text-center p-6 bg-white rounded-xl border border-gray-200 shadow-sm relative z-10">
+        <div className={`flex flex-col items-center text-center p-6 bg-white rounded-xl border border-gray-200 shadow-sm relative z-10 transition-opacity ${productosCount === 0 ? 'opacity-60' : ''}`}>
           <div className="w-14 h-14 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center font-bold text-xl mb-5 shadow-inner">2</div>
           <h3 className="font-bold text-gray-900 mb-2 text-lg">Copiá tu enlace</h3>
           <p className="text-sm text-gray-500 mb-6 grow">Obtené el link único de tu tienda para poder compartirlo.</p>
           <button
             onClick={handleCopy}
-            disabled={!slug}
+            disabled={!slug || productosCount === 0}
             className={`w-full justify-center px-4 py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 shadow-sm ${
-              !slug ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' :
+              !slug || productosCount === 0 ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200 pointer-events-none' :
               copied ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
             }`}
           >
@@ -89,12 +90,12 @@ export default function OnboardingFlow({ slug }: OnboardingFlowProps) {
         </div>
 
         {/* Flecha conectora 2 (desktop) */}
-        <div className="hidden md:flex absolute top-1/2 right-1/3 -translate-y-1/2 translate-x-1/2 text-gray-300 z-0">
+        <div className="hidden lg:flex absolute top-1/2 right-[33.33%] -translate-y-1/2 translate-x-1/2 text-gray-300 z-0">
           <ArrowRight className="w-8 h-8" />
         </div>
 
         {/* Paso 3: Compartir */}
-        <div className="flex flex-col items-center text-center p-6 bg-white rounded-xl border border-gray-200 shadow-sm relative z-10 overflow-hidden">
+        <div className={`flex flex-col items-center text-center p-6 bg-white rounded-xl border border-gray-200 shadow-sm relative z-10 overflow-hidden transition-opacity ${productosCount === 0 ? 'opacity-60' : ''}`}>
           {/* Fondo decorativo sutil para el último paso */}
           <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-green-50 rounded-full z-0 opacity-50"></div>
           
@@ -102,11 +103,11 @@ export default function OnboardingFlow({ slug }: OnboardingFlowProps) {
           <h3 className="font-bold text-gray-900 mb-2 text-lg relative z-10">Compartí y vendé</h3>
           <p className="text-sm text-gray-500 mb-6 grow relative z-10">Enviáselo a tus clientes por WhatsApp y recibí pedidos.</p>
           <a
-            href={slug ? whatsappUrl : '#'}
-            target={slug ? "_blank" : "_self"}
+            href={slug && productosCount > 0 ? whatsappUrl : '#'}
+            target={slug && productosCount > 0 ? "_blank" : "_self"}
             rel="noopener noreferrer"
             className={`w-full justify-center px-4 py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 shadow-sm relative z-10 ${
-              !slug ? 'bg-green-100 text-green-400 cursor-not-allowed border border-green-200' : 'bg-[#25D366] hover:bg-[#128C7E] text-white'
+              !slug || productosCount === 0 ? 'bg-gray-50 text-gray-400 cursor-not-allowed border border-gray-200 pointer-events-none' : 'bg-white border-2 border-green-500 text-green-600 hover:bg-green-50'
             }`}
           >
             <MessageCircle className="w-4 h-4" /> Compartir

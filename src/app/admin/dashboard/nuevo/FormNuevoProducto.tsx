@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { createCategoryFastAction } from './actions'
+import { Loader2 } from 'lucide-react'
 
 interface Categoria {
     id: string;
@@ -12,11 +13,13 @@ interface Categoria {
 export default function FormNuevoProducto({
     categorias,
     formAction,
-    state
+    state,
+    isLoading
 }: {
     categorias: Categoria[],
     formAction: (payload: FormData) => void,
-    state: { error: string }
+    state: { error: string },
+    isLoading?: boolean
 }) {
     const [fileName, setFileName] = useState<string | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -95,7 +98,8 @@ export default function FormNuevoProducto({
                         <button 
                             type="button" 
                             onClick={() => setIsModalOpen(true)} 
-                            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            disabled={isLoading}
+                            className={`text-sm font-medium ${isLoading ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
                         >
                             + Nueva
                         </button>
@@ -148,8 +152,21 @@ export default function FormNuevoProducto({
                 </div>
 
                 <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
-                    <Link href="/admin/dashboard" className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-5 py-2 rounded-lg">Cancelar</Link>
-                    <button type="submit" className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2 rounded-lg font-medium shadow-sm">Guardar</button>
+                    <Link href="/admin/dashboard" className={`bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-5 py-2.5 rounded-lg font-medium transition-colors ${isLoading ? 'pointer-events-none opacity-50' : ''}`}>Cancelar</Link>
+                    <button 
+                        type="submit" 
+                        disabled={isLoading}
+                        className={`bg-gray-900 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-colors flex items-center justify-center gap-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-800'}`}
+                    >
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Procesando...
+                            </>
+                        ) : (
+                            'Guardar'
+                        )}
+                    </button>
                 </div>
             </form>
 
@@ -184,7 +201,7 @@ export default function FormNuevoProducto({
                                 type="button" 
                                 onClick={handleCreateCategory}
                                 disabled={isSavingCategory || !newCategoryName.trim()}
-                                className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium disabled:opacity-50 transition-colors"
+                                className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium disabled:opacity-50 transition-colors"
                             >
                                 {isSavingCategory ? 'Guardando...' : 'Guardar'}
                             </button>

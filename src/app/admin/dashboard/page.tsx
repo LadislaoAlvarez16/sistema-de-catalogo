@@ -232,7 +232,7 @@ export default async function DashboardPage() {
             </table>
           </div>
         ) : (
-          <OnboardingFlow slug={account?.slug} />
+          <OnboardingFlow slug={account?.slug} productosCount={totalProductCount} />
         )}
       </div>
     </div>

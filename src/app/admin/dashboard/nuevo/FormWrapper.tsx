@@ -11,9 +11,10 @@ interface Categoria {
 }
 
 export default function FormWrapper({ categorias }: { categorias: Categoria[] }) {
-    const [state, formAction] = useActionState(createProductAction, { error: '' })
+    const [state, formAction, isPending] = useActionState(createProductAction, { error: '' })
     const [showSuccess, setShowSuccess] = useState(false)
     const [formKey, setFormKey] = useState(() => Date.now()) // <-- Inicialización lazy que arreglamos antes
+    const [isCompressing, setIsCompressing] = useState(false)
 
     useEffect(() => {
         if (state?.success) {
@@ -38,6 +39,7 @@ export default function FormWrapper({ categorias }: { categorias: Categoria[] })
         const imageFile = formData.get('image') as File | null;
 
         if (imageFile && imageFile.size > 0) {
+            setIsCompressing(true);
             try {
                 // Solo dejamos la configuración y la compresión en el cliente, sin tocar el formData original hasta que tengamos el archivo comprimido
                 const options = {
@@ -50,6 +52,8 @@ export default function FormWrapper({ categorias }: { categorias: Categoria[] })
                 formData.set('image', compressedFile, compressedFile.name);
             } catch (error) {
                 console.error('Error al comprimir la imagen:', error);
+            } finally {
+                setIsCompressing(false);
             }
         }
 
@@ -58,6 +62,8 @@ export default function FormWrapper({ categorias }: { categorias: Categoria[] })
             formAction(formData);
         });
     }
+
+    const isLoading = isPending || isCompressing;
 
     return (
         <>
@@ -72,6 +78,7 @@ export default function FormWrapper({ categorias }: { categorias: Categoria[] })
                 categorias={categorias}
                 formAction={handleAction}
                 state={state as { error: string; success?: boolean }}
+                isLoading={isLoading}
             />
         </>
     )

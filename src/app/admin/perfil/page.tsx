@@ -23,19 +23,19 @@ export default async function PerfilPage() {
         .single()
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6 md:p-8 text-gray-900">
+        <div className="min-h-screen bg-gray-50 p-4 md:p-8 text-gray-900">
             <div className="max-w-2xl mx-auto">
                 <Link
                     href="/admin/dashboard"
-                    className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors mb-6"
                 >
                     <ArrowLeft className="h-4 w-4" />
                     <span>Volver</span>
                 </Link>
 
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-1">Perfil del Negocio</h1>
-                    <p className="text-sm text-gray-600">
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">Perfil del Negocio</h1>
+                    <p className="text-sm text-gray-600 -mt-4">
                         Actualizá la información que ven tus clientes en el catálogo público.
                     </p>
                 </div>

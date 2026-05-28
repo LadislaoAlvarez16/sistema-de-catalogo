@@ -31,7 +31,7 @@ export default function ProfileForm({ account }: Props) {
                     {state.message}
                 </div>
             )}
-            {state?.error && (
+            {state?.error && !state.error.includes("enlace de catálogo") && (
                 <div className="p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 font-medium">
                     {state.error}
                 </div>
@@ -78,6 +78,11 @@ export default function ProfileForm({ account }: Props) {
                 <p className="text-xs text-amber-600 mt-1 font-medium">
                     Nota: Si cambias este enlace, los links anteriores que hayas compartido dejarán de funcionar.
                 </p>
+                {state?.error && state.error.includes("enlace de catálogo") && (
+                    <div className="mt-3 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200 text-sm font-medium">
+                        {state.error}
+                    </div>
+                )}
             </div>
 
             <div>

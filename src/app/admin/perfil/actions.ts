@@ -35,6 +35,10 @@ export async function updateAccountSettings(prevState: unknown, formData: FormDa
         .eq('id', account.id)
 
     if (error) {
+        // Interceptamos el código 23505 (Unique Violation en Postgres)
+        if (error.code === '23505') {
+            return { error: "Ese enlace de catálogo ya está siendo utilizado por otro comercio. Por favor, elegí uno distinto." }
+        }
         return { error: error.message }
     }
 
