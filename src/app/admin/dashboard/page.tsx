@@ -49,6 +49,7 @@ export default async function DashboardPage(props: { searchParams?: Promise<{ [k
   let totalProductCount = 0 // Variable para guardar el total real de productos
   let categoryCount = 0 //Variable para guardar cuántas categorías tiene
   let fetchError: string | null = null
+  let totalPages = 1 // Fallback value for Pagination component
 
   if (account && account.id) {
     // Buscar productos de la cuenta
@@ -76,7 +77,7 @@ export default async function DashboardPage(props: { searchParams?: Promise<{ [k
 
     // Calculamos el total de páginas en base al total filtrado
     const totalFilteredCount = filteredCount || 0
-    var totalPages = Math.max(1, Math.ceil(totalFilteredCount / ITEMS_PER_PAGE))
+    totalPages = Math.max(1, Math.ceil(totalFilteredCount / ITEMS_PER_PAGE))
 
     // Le pedimos a Supabase que solo cuente los productos (súper rápido)
     const { count: pCount } = await supabase
