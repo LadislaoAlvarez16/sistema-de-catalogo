@@ -179,7 +179,7 @@ export default async function DashboardPage() {
         ) : totalProductCount > 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 border-b border-gray-200 hidden md:table-header-group">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Imagen</th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
@@ -188,10 +188,11 @@ export default async function DashboardPage() {
                   <th className="px-6 py-4"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y md:divide-y-0 divide-gray-100 md:divide-gray-100">
                 {products.map((product) => (
-                  <tr key={product.id} className={`hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0 ${product.active === false ? 'opacity-60 grayscale' : ''}`}>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                  <tr key={product.id} className={`block md:table-row p-4 md:p-0 hover:bg-gray-50 transition-colors border-b border-gray-200 md:border-gray-100 last:border-0 ${product.active === false ? 'opacity-60 grayscale' : ''}`}>
+                    <td className="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-4 whitespace-nowrap border-b border-gray-100 md:border-none">
+                      <span className="md:hidden font-semibold text-gray-500 text-sm">Imagen</span>
                       {product.image_url ? (
                         <Image 
                           src={product.image_url} 
@@ -206,20 +207,27 @@ export default async function DashboardPage() {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">{product.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{product.category || '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                      {product.price ? `$${product.price}` : '-'}
+                    <td className="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-4 border-b border-gray-100 md:border-none">
+                      <span className="md:hidden font-semibold text-gray-500 text-sm">Nombre</span>
+                      <span className="text-sm text-gray-700 font-medium truncate max-w-[200px] sm:max-w-xs md:max-w-none text-right md:text-left">{product.name}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <div className="flex gap-2 justify-end items-center">
+                    <td className="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-4 whitespace-nowrap border-b border-gray-100 md:border-none">
+                      <span className="md:hidden font-semibold text-gray-500 text-sm">Categoría</span>
+                      <span className="text-sm text-gray-700 text-right md:text-left">{product.category || '-'}</span>
+                    </td>
+                    <td className="flex justify-between items-center md:table-cell px-2 py-3 md:px-6 md:py-4 whitespace-nowrap border-b border-gray-100 md:border-none">
+                      <span className="md:hidden font-semibold text-gray-500 text-sm">Precio</span>
+                      <span className="text-sm text-gray-700 text-right md:text-left">{product.price ? `$${product.price}` : '-'}</span>
+                    </td>
+                    <td className="block md:table-cell px-2 py-4 md:px-6 md:py-4 text-right text-sm">
+                      <div className="flex flex-wrap gap-3 mt-4 md:mt-0 md:justify-end w-full">
                         <ToggleProductVisibility 
                           productId={product.id} 
                           initialIsActive={product.active ?? true} 
                         />
                         <Link
                           href={`/admin/dashboard/editar/${product.id}`}
-                          className="text-blue-600 hover:text-blue-900 font-medium bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors"
+                          className="flex-1 md:flex-none text-center text-blue-600 hover:text-blue-900 font-medium bg-blue-50 hover:bg-blue-100 px-4 py-2.5 rounded-lg transition-colors"
                         >
                           Editar
                         </Link>
