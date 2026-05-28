@@ -5,9 +5,9 @@ import Image from 'next/image'
 import DeleteProductButton from '@/components/admin/DeleteProductButton'
 import { PLAN_RULES, type Plan } from '@/lib/plan/plan.config'
 import CopyCatalogLink from '@/components/admin/CopyCatalogLink'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, Plus } from 'lucide-react'
 import ToggleProductVisibility from '@/components/admin/ToggleProductVisibility'
-import LogoutButton from '@/components/admin/LogoutButton'
+import DashboardMobileMenu from '@/components/admin/DashboardMobileMenu'
 import OnboardingFlow from '@/components/admin/OnboardingFlow'
 
 type Product = {
@@ -90,69 +90,59 @@ export default async function DashboardPage() {
   const categoryBarColor = categoryPercentage >= 100 ? 'bg-red-500' : categoryPercentage >= 90 ? 'bg-orange-500' : 'bg-purple-500'
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 p-6 md:p-8">
+    <div className="min-h-screen bg-gray-50 text-gray-900 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
-          <h1 className="text-2xl font-bold text-gray-900">¡Bienvenido, {account?.name || user.email}!</h1>
+        <div className="flex flex-col mb-8 gap-4">
+          <div className="flex justify-between items-center w-full">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate pr-4">¡Bienvenido, {account?.name || user.email}!</h1>
+            <DashboardMobileMenu />
+          </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            {account?.slug && (
-              <div className="flex items-center gap-2 lg:mr-2">
-                <Link
-                  href={`/${account.slug}`}
-                  target="_blank"
-                  className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 px-3 py-2 rounded-lg font-medium text-sm transition-colors shadow-sm"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  <span className="hidden sm:inline">Ver catálogo público</span>
-                </Link>
-                <CopyCatalogLink slug={account.slug} />
-              </div>
-            )}
-            <Link
-              href="/admin/perfil"
-              className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium text-sm transition-colors shadow-sm"
-            >
-              Perfil
-            </Link>
-            <Link
-              href="/admin/dashboard/categorias"
-              className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium text-sm transition-colors shadow-sm"
-            >
-              Categorías
-            </Link>
-
-            {/* Componente cliente para cerrar sesión que maneja los errores devueltos por la Server Action */}
-            <LogoutButton />
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-3">
+              {account?.slug && (
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/${account.slug}`}
+                    target="_blank"
+                    className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 px-3 py-2 rounded-lg font-medium text-sm transition-colors shadow-sm"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    <span className="hidden sm:inline">Ver catálogo público</span>
+                  </Link>
+                  <CopyCatalogLink slug={account.slug} />
+                </div>
+              )}
+            </div>
 
             {isProductLimitReached ? (
               <button
                 disabled
-                className="bg-gray-300 text-gray-500 cursor-not-allowed px-4 py-2 rounded-lg font-medium text-sm shadow-sm"
+                className="w-full md:w-auto flex items-center justify-center gap-2 bg-gray-300 text-gray-500 cursor-not-allowed py-3 px-4 rounded-lg font-medium text-sm shadow-sm mt-4 md:mt-0"
                 title="Límite alcanzado. Pasate al plan Medio para subir más."
               >
-                + Agregar producto
+                <Plus className="h-5 w-5" /> Agregar producto
               </button>
             ) : (
               <Link
                 href="/admin/dashboard/nuevo"
-                className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors shadow-sm"
+                className="w-full md:w-auto flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white py-3 px-4 rounded-lg font-medium text-sm transition-colors shadow-sm mt-4 md:mt-0"
               >
-                + Agregar producto
+                <Plus className="h-5 w-5" /> Agregar producto
               </Link>
             )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+          <div className="bg-white p-4 md:p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Plan Actual</h3>
             <p className="text-3xl font-extrabold text-gray-900 capitalize">
               {currentPlan === 'basic' ? 'Básico 🟢' : 'Pro 🔴'}
             </p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+          <div className="bg-white p-4 md:p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Productos</h3>
             <div className="flex justify-between items-end">
               <span className="text-3xl font-extrabold text-gray-900">{totalProductCount}</span>
@@ -168,7 +158,7 @@ export default async function DashboardPage() {
             )}
           </div>
 
-          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+          <div className="bg-white p-4 md:p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Categorías</h3>
             <div className="flex justify-between items-end">
               <span className="text-3xl font-extrabold text-gray-900">{categoryCount}</span>
