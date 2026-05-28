@@ -9,6 +9,8 @@ import { ExternalLink, Plus } from 'lucide-react'
 import ToggleProductVisibility from '@/components/admin/ToggleProductVisibility'
 import DashboardMobileMenu from '@/components/admin/DashboardMobileMenu'
 import OnboardingFlow from '@/components/admin/OnboardingFlow'
+import SearchBar from '@/components/admin/SearchBar'
+import Pagination from '@/components/admin/Pagination'
 
 type Product = {
   id: string
@@ -19,7 +21,14 @@ type Product = {
   active?: boolean
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const searchParams = props.searchParams ? await props.searchParams : {}
+  const query = typeof searchParams.query === 'string' ? searchParams.query : ''
+  const currentPage = typeof searchParams.page === 'string' ? Math.max(1, parseInt(searchParams.page) || 1) : 1
+  const ITEMS_PER_PAGE = 10
+  const from = (currentPage - 1) * ITEMS_PER_PAGE
+  const to = from + ITEMS_PER_PAGE - 1
+
   const supabase = await createClient()
   const {
     data: { user },
@@ -43,13 +52,20 @@ export default async function DashboardPage() {
 
   if (account && account.id) {
     // Buscar productos de la cuenta
-    // Optimizamos el payload seleccionando solo campos requeridos para la tabla (incluyendo imagen)
-    const { data: productsData, error } = await supabase
+    // Optimizamos el payload seleccionando solo campos requeridos para la tabla (incluyendo imagen) y solicitamos el count
+    let queryBuilder = supabase
       .from('products')
-      .select('id, name, category, price, active, image_url')
+      .select('id, name, category, price, active, image_url', { count: 'exact' })
       .eq('account_id', account.id)
+
+    // Si hay búsqueda, filtramos usando ilike
+    if (query) {
+      queryBuilder = queryBuilder.ilike('name', `%${query}%`)
+    }
+
+    const { data: productsData, error, count: filteredCount } = await queryBuilder
       .order('created_at', { ascending: false })
-      .limit(50)
+      .range(from, to)
 
     if (error) {
       console.error('Error fetching products:', error)
@@ -57,6 +73,10 @@ export default async function DashboardPage() {
     } else {
       products = productsData || []
     }
+
+    // Calculamos el total de páginas en base al total filtrado
+    const totalFilteredCount = filteredCount || 0
+    var totalPages = Math.max(1, Math.ceil(totalFilteredCount / ITEMS_PER_PAGE))
 
     // Le pedimos a Supabase que solo cuente los productos (súper rápido)
     const { count: pCount } = await supabase
@@ -177,7 +197,13 @@ export default async function DashboardPage() {
             <p className="text-red-600 font-medium">{fetchError}</p>
           </div>
         ) : totalProductCount > 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+          <>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Tus Productos</h2>
+              <SearchBar />
+            </div>
+            
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50 border-b border-gray-200 hidden md:table-header-group">
                 <tr>
@@ -239,6 +265,8 @@ export default async function DashboardPage() {
               </tbody>
             </table>
           </div>
+          <Pagination totalPages={totalPages} currentPage={currentPage} />
+        </>
         ) : (
           <OnboardingFlow slug={account?.slug} productosCount={totalProductCount} />
         )}
