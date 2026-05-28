@@ -1,1 +1,1 @@
-export type Plan = "basic" | "medium" | "pro";
+export type Plan = "basic" | "pro";

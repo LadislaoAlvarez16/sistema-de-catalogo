@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Copy, Check, ExternalLink } from 'lucide-react'
+import { Copy, Check } from 'lucide-react'
 
 export default function CopyCatalogLink({ slug }: { slug: string }) {
     const [copied, setCopied] = useState(false)

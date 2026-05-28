@@ -1,4 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js'
+import { Database } from '@/lib/database.types'
 
 export function slugify(text: string): string {
     return text
@@ -13,7 +14,7 @@ export function slugify(text: string): string {
 }
 
 export async function generateUniqueSlug(
-    supabase: SupabaseClient<any, "public", any>,
+    supabase: SupabaseClient<Database>,
     name: string,
     accountId: string,
     currentProductId?: string

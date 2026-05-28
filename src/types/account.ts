@@ -1,6 +1,8 @@
+import { Plan } from "./plan";
+
 export type Account = {
     id: string;
     name: string;
-    plan: "basic" | "medium" | "pro";
+    plan: Plan;
     whatsapp?: string | null;
 };

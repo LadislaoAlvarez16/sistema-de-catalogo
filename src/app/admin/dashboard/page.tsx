@@ -148,7 +148,7 @@ export default async function DashboardPage() {
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Plan Actual</h3>
             <p className="text-3xl font-extrabold text-gray-900 capitalize">
-              {currentPlan === 'basic' ? 'Básico 🟢' : currentPlan === 'medium' ? 'Medio 🔵' : 'Pro 🔴'}
+              {currentPlan === 'basic' ? 'Básico 🟢' : 'Pro 🔴'}
             </p>
           </div>
 
