@@ -1,5 +1,7 @@
 # 🗂️ TiendaBase — SaaS de Catálogos Digitales para Negocios
 
+[![CI Tests](https://github.com/LadislaoAlvarez16/Sistema-catalogo/actions/workflows/test.yml/badge.svg)](https://github.com/LadislaoAlvarez16/Sistema-catalogo/actions/workflows/test.yml)
+
 Plataforma SaaS multitenant para que comercios y emprendedores reemplacen sus PDFs y listas de WhatsApp por un catálogo web profesional, rápido, instalable en celulares y 100% autogestionable — sin depender de un desarrollador para cada cambio.
 
 🔗 **Demo en producción:** [sistema-de-catalogo.vercel.app/almacen-deco](https://sistema-de-catalogo.vercel.app/almacen-deco)  
