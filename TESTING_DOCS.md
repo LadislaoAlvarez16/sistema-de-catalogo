@@ -42,3 +42,17 @@ Se implementó una estrategia de testing pragmática enfocada en aportar el mayo
 - **Validación Defensiva:** Nunca confiar en los inputs del cliente. Las Server Actions deben validar los datos (ej. formato de Slugs) explícitamente antes de tocar la base de datos.
 - **Manejo de Errores vs. Control de Flujo:** En Next.js App Router, funciones como `redirect()` y `notFound()` operan lanzando errores. Nunca deben colocarse dentro de un bloque `try/catch` genérico destinado a atrapar fallos de base de datos.
 - **Observabilidad en CI:** Configurar capturas de pantalla o volcados de logs en Playwright en caso de fallo es vital para diagnosticar errores sin necesidad de adivinar el estado de la UI.
+
+## 5. Integración Continua e Infraestructura (CI/CD)
+
+### Desafío 5.1: Colisión de Test Runners (Jest vs Playwright)
+* **Problema:** En el entorno de CI, el comando `npm run test:unit` (Jest) fallaba con el error `TypeError: Class extends value undefined is not a constructor`. Jest estaba intentando ejecutar los archivos `.spec.ts` de Playwright, los cuales requieren un entorno de navegador real que Jest no posee.
+* **Solución:** Se trazó un límite estricto de ejecución modificando `jest.config.ts`. Se añadió la propiedad `testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/', '<rootDir>/tests/e2e/']`, obligando a Jest a ignorar la suite de E2E y correr únicamente los tests unitarios.
+
+### Desafío 5.2: Variables de Entorno en GitHub Actions
+* **Problema:** GitHub Actions levanta un entorno efímero e independiente que no tiene acceso a las variables de entorno configuradas en Vercel, lo que causaba que el test E2E fallara al intentar conectarse a Supabase.
+* **Solución:** Se inyectaron explícitamente `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` en los **Repository Secrets** de GitHub. El archivo `.github/workflows/test.yml` fue configurado para mapear estos secretos como variables de entorno durante el paso de ejecución de Playwright.
+
+### 5.3 Control de Versiones Limpio (Git)
+* Se implementó una política de no seguimiento para los artefactos generados por las pruebas E2E. Las carpetas `playwright-report/` y `test-results/` fueron añadidas al `.gitignore` para evitar saturar el historial del repositorio con capturas de pantalla y reportes HTML pesados generados localmente.
+* Se adoptó un flujo de trabajo mediante **Pull Requests** y **Squash and Merge**, garantizando que la rama `main` mantenga un historial de commits limpio y semántico.
