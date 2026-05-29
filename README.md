@@ -4,7 +4,7 @@
 
 Plataforma SaaS multitenant para que comercios y emprendedores reemplacen sus PDFs y listas de WhatsApp por un catálogo web profesional, rápido, instalable en celulares y 100% autogestionable — sin depender de un desarrollador para cada cambio.
 
-🔗 **Demo en producción:** [sistema-de-catalogo.vercel.app/almacen-deco](https://sistema-de-catalogo.vercel.app/almacen-deco)  
+🔗 **En producción:** [sistema-de-catalogo.vercel.app/almacen-deco](https://sistema-de-catalogo.vercel.app/almacen-deco)  
 🌐 **Landing:** [sistema-de-catalogo.vercel.app](https://sistema-de-catalogo.vercel.app)
 
 ---
