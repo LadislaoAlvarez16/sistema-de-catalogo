@@ -40,7 +40,7 @@ export default function Home() {
               href="/almacen-deco"
               className="w-full sm:w-auto px-8 py-4 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-full font-semibold text-lg transition-all flex items-center justify-center"
             >
-              Ver demo
+              Ver un catálogo real
             </Link>
           </div>
         </div>
