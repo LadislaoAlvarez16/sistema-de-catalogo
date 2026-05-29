@@ -14,55 +14,63 @@ export async function registerUser(formData: FormData) {
     return { error: "Todos los campos obligatorios deben estar completos." };
   }
 
-  const supabase = await createClient();
-
-  // 1. Validar que el slug no esté tomado
-  const { data: existingAccount } = await supabase
-    .from("accounts")
-    .select("slug")
-    .eq("slug", slug)
-    .single();
-
-  if (existingAccount) {
-    return { error: "La URL ya está en uso. Por favor, elige otra." };
+  const slugRegex = /^[a-z0-9-]+$/;
+  if (!slugRegex.test(slug)) {
+    return { error: 'Invalid slug format. Spaces and special characters are not allowed.' };
   }
 
-  // 2. Llama a supabase.auth.signUp()
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+  try {
+    const supabase = await createClient();
 
-  if (authError) {
-    if (authError.message.includes("already registered")) {
-      return { error: "El correo ya existe. Por favor, inicia sesión." };
+    // 1. Validar que el slug no esté tomado
+    const { data: existingAccount } = await supabase
+      .from("accounts")
+      .select("slug")
+      .eq("slug", slug)
+      .single();
+
+    if (existingAccount) {
+      return { error: "La URL ya está en uso. Por favor, elige otra." };
     }
-    return { error: authError.message };
-  }
 
-  if (!authData.user) {
-    return { error: "Hubo un error al crear el usuario." };
-  }
-
-  const userId = authData.user.id;
-
-  // 3. Inserta un registro en la tabla accounts
-  const { error: insertError } = await supabase
-    .from("accounts")
-    .insert({
-      id: userId,
-      user_id: userId,
-      name,
-      slug,
-      whatsapp: whatsapp || null,
-      plan: "basic",
+    // 2. Llama a supabase.auth.signUp()
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
     });
 
-  if (insertError) {
-    console.error("Error inserting account:", insertError);
-    // Note: In a production app you might want to handle cleaning up the auth user here
-    // or use a secure database trigger instead of client-side inserts.
-    return { error: "Hubo un error al configurar tu cuenta. Intenta de nuevo." };
+    if (authError) {
+      if (authError.message.includes("already registered")) {
+        return { error: "El correo ya existe. Por favor, inicia sesión." };
+      }
+      return { error: authError.message };
+    }
+
+    if (!authData.user) {
+      return { error: "Hubo un error al crear el usuario." };
+    }
+
+    const userId = authData.user.id;
+
+    // 3. Inserta un registro en la tabla accounts
+    const { error: insertError } = await supabase
+      .from("accounts")
+      .insert({
+        id: userId,
+        user_id: userId,
+        name,
+        slug,
+        whatsapp: whatsapp || null,
+        plan: "basic",
+      });
+
+    if (insertError) {
+      console.error("Error inserting account:", insertError);
+      return { error: "Hubo un error al configurar tu cuenta. Intenta de nuevo." };
+    }
+  } catch (dbError) {
+    console.error("Error en el servidor:", dbError);
+    return { error: "Hubo un problema en el servidor" };
   }
 
   // 4. Redirige al usuario a /admin/dashboard
