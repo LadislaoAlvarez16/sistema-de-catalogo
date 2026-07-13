@@ -1,0 +1,14 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # Todos los días a las 03:00 UTC
+  workflow_dispatch: # Permite dispararlo manualmente para pruebas
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Keep-Alive Ping
+        run: |
+          curl -f -X GET "${{ secrets.PROD_APP_URL }}/api/cron/keep-alive?token=${{ secrets.CRON_SECRET }}"
