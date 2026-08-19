@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Menu, MessageCircle, X, ChevronRight } from "lucide-react";
+import { Search, MessageCircle } from "lucide-react";
 import type { Product } from "@/types/product";
 import ProductCard from "@/components/ProductCard";
 import ProductModal from "@/components/catalog/ProductModal";
@@ -32,8 +32,6 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<SortOption>("name-asc");
     const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
-
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const rules = getPlanRules(plan);
     const canOpenModal = canUseProductModal(plan);
@@ -104,15 +102,6 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
             <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
                 <div className="flex w-full items-center justify-between px-3 py-3 sm:px-6">
                     <div className="flex items-center gap-2 sm:gap-4">
-                        <button
-                            type="button"
-                            onClick={() => setIsMenuOpen((prev) => !prev)}
-                            className="flex items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:px-4"
-                        >
-                            <Menu className="h-5 w-5 text-gray-600" />
-                            <span className="hidden sm:inline">Categorías</span>
-                        </button>
-
                         <span className="max-w-40 truncate text-base font-semibold text-gray-900 sm:max-w-none sm:text-lg">
                             {accountData?.name || "Catálogo"}
                         </span>
@@ -124,7 +113,7 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label="Consultar por WhatsApp"
-                            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-gray-100 px-3 py-2 text-xs font-medium text-gray-800 transition-colors hover:bg-gray-200 sm:px-4 sm:text-sm"
+                            className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-gray-100 px-3 py-2 text-xs font-medium text-gray-800 transition-colors hover:bg-gray-200 sm:px-4 sm:text-sm min-h-[44px]"
                         >
                             <MessageCircle className="h-4 w-4 text-green-600" />
                             <span className="hidden sm:inline">Consultar</span>
@@ -132,79 +121,6 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
                     )}
                 </div>
             </header>
-
-            {isMenuOpen && (
-                <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}>
-                    <aside
-                        className="fixed top-0 left-0 z-50 flex h-full w-80 max-w-[85vw] transform flex-col bg-white shadow-2xl transition-transform duration-300"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="flex items-center justify-between border-b border-gray-100 p-6">
-                            <h2 className="text-xl font-bold text-gray-900">Categorías</h2>
-                            <button
-                                type="button"
-                                onClick={() => setIsMenuOpen(false)}
-                                className="text-gray-500 transition-colors hover:text-gray-900"
-                                aria-label="Cerrar menú"
-                            >
-                                <X className="h-5 w-5" />
-                            </button>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto p-6">
-                            {canUseSort && (
-                                <div className="mb-6">
-                                    <select
-                                        value={sortBy}
-                                        onChange={(e) => {
-                                            setSortBy(e.target.value as SortOption);
-                                            setVisibleCount(PRODUCTS_PER_PAGE);
-                                        }}
-                                        className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                                    >
-                                        <option value="name-asc">Nombre A–Z</option>
-                                        <option value="name-desc">Nombre Z–A</option>
-                                        <option value="category">Categoría</option>
-                                        <option value="price-asc">Menor precio</option>
-                                        <option value="price-desc">Mayor precio</option>
-                                    </select>
-                                </div>
-                            )}
-
-                            <div>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setSelectedCategory("all");
-                                        setVisibleCount(PRODUCTS_PER_PAGE);
-                                        setIsMenuOpen(false);
-                                    }}
-                                    className={`w-full flex items-center justify-between border-b border-gray-50 py-4 text-left transition-colors ${selectedCategory === "all" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"}`}
-                                >
-                                    <span>Todos los productos</span>
-                                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                                </button>
-
-                                {allowedCategories.map((category) => (
-                                    <button
-                                        key={category.id}
-                                        type="button"
-                                        onClick={() => {
-                                            setSelectedCategory(category.id);
-                                            setVisibleCount(PRODUCTS_PER_PAGE);
-                                            setIsMenuOpen(false);
-                                        }}
-                                        className={`w-full flex items-center justify-between border-b border-gray-50 py-4 text-left transition-colors ${selectedCategory === category.id ? "text-blue-600" : "text-gray-700 hover:text-blue-600"}`}
-                                    >
-                                        <span>{category.name}</span>
-                                        <ChevronRight className="h-4 w-4 text-gray-400" />
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </aside>
-                </div>
-            )}
 
             <section className="mx-auto flex max-w-4xl flex-col items-center px-4 pt-8 text-center">
                 <h1 className="mb-4 text-center text-4xl font-bold tracking-tight text-gray-900 md:text-5xl">
@@ -217,7 +133,7 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
                 )}
 
                 {canUseSearch && (
-                    <div className="relative mt-6 mb-8 w-full max-w-3xl">
+                    <div className="relative mt-6 mb-6 w-full max-w-3xl">
                         <div className="group relative">
                             <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
                                 <Search className="h-5 w-5 text-gray-400 transition-colors group-focus-within:text-blue-500" />
@@ -230,7 +146,7 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
                                     setSearchQuery(e.target.value);
                                     setVisibleCount(PRODUCTS_PER_PAGE);
                                 }}
-                                className="w-full rounded-2xl border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                className="w-full rounded-2xl border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 text-base sm:text-sm placeholder-gray-400 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                             />
                         </div>
                     </div>
@@ -238,12 +154,59 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
             </section>
 
             <main className="mx-auto w-full max-w-5xl px-4 pb-16">
+                <div className="mb-8 flex flex-col gap-4">
+                    <nav className="flex gap-2 overflow-x-auto no-scrollbar snap-x py-2 px-1 touch-pan-x w-full">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setSelectedCategory("all");
+                                setVisibleCount(PRODUCTS_PER_PAGE);
+                            }}
+                            className={`rounded-full whitespace-nowrap min-h-[44px] px-4 py-2 flex items-center shrink-0 text-sm font-medium transition-colors ${selectedCategory === "all" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+                        >
+                            Todos
+                        </button>
+                        {allowedCategories.map((category) => (
+                            <button
+                                key={category.id}
+                                type="button"
+                                onClick={() => {
+                                    setSelectedCategory(category.id);
+                                    setVisibleCount(PRODUCTS_PER_PAGE);
+                                }}
+                                className={`rounded-full whitespace-nowrap min-h-[44px] px-4 py-2 flex items-center shrink-0 text-sm font-medium transition-colors ${selectedCategory === category.id ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+                            >
+                                {category.name}
+                            </button>
+                        ))}
+                    </nav>
 
-                {isFiltering && (
-                    <p className="text-sm text-gray-500 font-medium mb-4">
+                </div>
+
+                <div className="flex items-center justify-between gap-4 py-3 mb-4">
+                    <p className="text-sm text-gray-500 font-medium">
                         {resultText}
                     </p>
-                )}
+
+                    {canUseSort && (
+                        <div className="w-auto shrink-0">
+                            <select
+                                value={sortBy}
+                                onChange={(e) => {
+                                    setSortBy(e.target.value as SortOption);
+                                    setVisibleCount(PRODUCTS_PER_PAGE);
+                                }}
+                                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 min-h-[44px] cursor-pointer text-gray-900 text-base sm:text-sm shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
+                            >
+                                <option value="name-asc">Nombre A–Z</option>
+                                <option value="name-desc">Nombre Z–A</option>
+                                <option value="category">Categoría</option>
+                                <option value="price-asc">Menor precio</option>
+                                <option value="price-desc">Mayor precio</option>
+                            </select>
+                        </div>
+                    )}
+                </div>
 
                 {products.length === 0 ? (
                     <p className="py-12 text-center text-gray-500">Tu catálogo aún no tiene productos.</p>

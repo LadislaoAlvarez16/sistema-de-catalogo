@@ -1,7 +1,9 @@
 "use client"
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useActionState } from 'react'
+import { Loader2 } from 'lucide-react'
+import { compressImage } from '@/lib/image-compression'
 
 interface Categoria {
     id: string;
@@ -24,10 +26,14 @@ export default function FormEditarProducto({
 }: {
     product: Product,
     categorias: Categoria[],
-    action: (payload: FormData) => void
+    action: (prevState: unknown, payload: FormData) => Promise<{ error?: string; success?: boolean }>
 }) {
     const [fileName, setFileName] = useState<string | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [imageError, setImageError] = useState<string | null>(null);
+    const [isCompressing, setIsCompressing] = useState(false);
+    
+    const [state, formAction, isPending] = useActionState(action, { error: '' })
 
     // Limpieza de memoria (evitar memory leaks con URL.createObjectURL)
     useEffect(() => {
@@ -38,33 +44,76 @@ export default function FormEditarProducto({
         };
     }, [previewUrl]);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         
+        setImageError(null);
+
         // Liberamos la URL anterior si el usuario selecciona otro archivo
         if (previewUrl) {
             URL.revokeObjectURL(previewUrl);
         }
 
         if (file) {
-            setFileName(file.name);
-            setPreviewUrl(URL.createObjectURL(file));
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+            if (!validTypes.includes(file.type) && !file.type.startsWith('image/')) {
+                setImageError("El archivo debe ser una imagen válida");
+                e.target.value = '';
+                setFileName(null);
+                setPreviewUrl(null);
+                return;
+            }
+
+            setIsCompressing(true);
+            try {
+                const compressedFile = await compressImage(file);
+                
+                // Actualizar el input con el archivo comprimido
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(compressedFile);
+                e.target.files = dataTransfer.files;
+
+                const MAX_SIZE = 4.5 * 1024 * 1024;
+                if (compressedFile.size > MAX_SIZE) {
+                    setImageError("La imagen no debe superar los 4.5 MB tras la compresión");
+                    e.target.value = '';
+                    setFileName(null);
+                    setPreviewUrl(null);
+                    return;
+                }
+
+                setFileName(compressedFile.name);
+                setPreviewUrl(URL.createObjectURL(compressedFile));
+            } catch (error) {
+                console.error("Error comprimiendo imagen", error);
+                setImageError("Hubo un error al optimizar la imagen");
+                e.target.value = '';
+                setFileName(null);
+                setPreviewUrl(null);
+            } finally {
+                setIsCompressing(false);
+            }
         } else {
             setFileName(null);
             setPreviewUrl(null);
         }
     };
 
-    // La imagen a mostrar es la previsualización local, o si no hay, la imagen actual del producto
     const currentDisplayImage = previewUrl || product.image_url;
 
     return (
-        <form action={action} className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-5">
+        <form action={formAction} className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-5 relative z-0">
+            {state?.error && (
+                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+                    {state.error}
+                </div>
+            )}
+            
             <input type="hidden" name="current_image_url" value={product.image_url || ''} />
 
             <div>
                 <label htmlFor="name" className="block text-sm font-semibold text-gray-800 mb-1">Nombre</label>
-                <input type="text" id="name" name="name" defaultValue={product.name} required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white" />
+                <input type="text" id="name" name="name" defaultValue={product.name} required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm" />
             </div>
 
             <div>
@@ -74,7 +123,7 @@ export default function FormEditarProducto({
                     name="category_id"
                     defaultValue={product.category_id || ''}
                     required
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm"
                     onChange={(e) => {
                         const selectedText = e.target.options[e.target.selectedIndex].text;
                         const hiddenInput = document.getElementById('category_name') as HTMLInputElement;
@@ -91,12 +140,12 @@ export default function FormEditarProducto({
 
             <div>
                 <label htmlFor="price" className="block text-sm font-semibold text-gray-800 mb-1">Precio</label>
-                <input type="number" id="price" name="price" defaultValue={product.price} required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white" />
+                <input type="number" id="price" name="price" defaultValue={product.price} required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm" />
             </div>
 
             <div>
                 <label htmlFor="description" className="block text-sm font-semibold text-gray-800 mb-1">Descripción</label>
-                <textarea id="description" name="description" rows={3} defaultValue={product.description || ''} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white"></textarea>
+                <textarea id="description" name="description" rows={3} defaultValue={product.description || ''} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm"></textarea>
             </div>
 
             <div>
@@ -114,11 +163,32 @@ export default function FormEditarProducto({
                     )}
                 </label>
                 <input type="file" id="image" name="image" accept="image/*" className="hidden" onChange={handleFileChange} />
+                {imageError && (
+                    <p className="mt-2 text-sm text-red-600 font-medium">{imageError}</p>
+                )}
             </div>
 
             <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
-                <Link href="/admin/dashboard" className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-5 py-2 rounded-lg">Cancelar</Link>
-                <button type="submit" className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2 rounded-lg font-medium shadow-sm">Actualizar</button>
+                <Link href="/admin/dashboard" className={`bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-5 py-2.5 rounded-lg font-medium transition-colors ${isPending || isCompressing ? 'pointer-events-none opacity-50' : ''}`}>Cancelar</Link>
+                <button 
+                    type="submit" 
+                    disabled={isPending || !!imageError || isCompressing}
+                    className={`bg-gray-900 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-colors flex items-center justify-center gap-2 ${isPending || imageError || isCompressing ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-800'}`}
+                >
+                    {isCompressing ? (
+                        <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Optimizando imagen...
+                        </>
+                    ) : isPending ? (
+                        <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Procesando...
+                        </>
+                    ) : (
+                        'Actualizar'
+                    )}
+                </button>
             </div>
         </form>
     )

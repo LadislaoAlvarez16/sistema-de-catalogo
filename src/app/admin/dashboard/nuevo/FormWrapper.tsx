@@ -1,9 +1,8 @@
 "use client"
 
-import { useActionState, startTransition, useEffect, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { createProductAction } from './actions'
 import FormNuevoProducto from './FormNuevoProducto'
-import imageCompression from 'browser-image-compression'
 
 interface Categoria {
     id: string;
@@ -14,7 +13,6 @@ export default function FormWrapper({ categorias }: { categorias: Categoria[] })
     const [state, formAction, isPending] = useActionState(createProductAction, { error: '' })
     const [showSuccess, setShowSuccess] = useState(false)
     const [formKey, setFormKey] = useState(() => Date.now()) // <-- Inicialización lazy que arreglamos antes
-    const [isCompressing, setIsCompressing] = useState(false)
 
     useEffect(() => {
         if (state?.success) {
@@ -35,36 +33,6 @@ export default function FormWrapper({ categorias }: { categorias: Categoria[] })
         }
     }, [state])
 
-    const handleAction = async (formData: FormData) => {
-        const imageFile = formData.get('image') as File | null;
-
-        if (imageFile && imageFile.size > 0) {
-            setIsCompressing(true);
-            try {
-                // Solo dejamos la configuración y la compresión en el cliente, sin tocar el formData original hasta que tengamos el archivo comprimido
-                const options = {
-                    maxSizeMB: 0.3,
-                    maxWidthOrHeight: 1080,
-                    useWebWorker: true,
-                };
-
-                const compressedFile = await imageCompression(imageFile, options);
-                formData.set('image', compressedFile, compressedFile.name);
-            } catch (error) {
-                console.error('Error al comprimir la imagen:', error);
-            } finally {
-                setIsCompressing(false);
-            }
-        }
-
-        // Envolvemos el envío en startTransition
-        startTransition(() => {
-            formAction(formData);
-        });
-    }
-
-    const isLoading = isPending || isCompressing;
-
     return (
         <>
             {showSuccess && (
@@ -76,9 +44,9 @@ export default function FormWrapper({ categorias }: { categorias: Categoria[] })
             <FormNuevoProducto
                 key={formKey}
                 categorias={categorias}
-                formAction={handleAction}
+                formAction={formAction}
                 state={state as { error: string; success?: boolean }}
-                isLoading={isLoading}
+                isLoading={isPending}
             />
         </>
     )

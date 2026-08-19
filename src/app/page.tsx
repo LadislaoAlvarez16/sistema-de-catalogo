@@ -175,7 +175,7 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold text-white mb-2">Plan Pro</h3>
               <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-4xl md:text-5xl font-extrabold text-white">ARG $17.000</span>
+                <span className="text-4xl md:text-5xl font-extrabold text-white">ARG $20.000</span>
                 <span className="text-gray-400 font-medium">/mes</span>
               </div>
               <ul className="space-y-4 mb-8 flex-1">

@@ -46,7 +46,7 @@ export default function LoginPage() {
               name="email"
               required
               autoComplete="email"
-              className="mt-1 block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm text-gray-900 placeholder-gray-400 focus:border-black focus:outline-none focus:ring-black sm:text-sm"
+              className="mt-1 block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm text-gray-900 placeholder-gray-400 focus:border-black focus:outline-none focus:ring-black text-base sm:text-sm"
             />
           </div>
 
@@ -60,7 +60,7 @@ export default function LoginPage() {
               name="password"
               required
               autoComplete="current-password"
-              className="mt-1 block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm text-gray-900 placeholder-gray-400 focus:border-black focus:outline-none focus:ring-black sm:text-sm"
+              className="mt-1 block w-full appearance-none rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm text-gray-900 placeholder-gray-400 focus:border-black focus:outline-none focus:ring-black text-base sm:text-sm"
             />
           </div>
 

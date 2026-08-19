@@ -57,7 +57,7 @@ export default async function CategoriasPage() {
                         <button
                             type="submit"
                             disabled={isLimitReached} // Bloquea el clic
-                            className={`bg-gray-900 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition-colors ${isLimitReached
+                            className={`bg-gray-900 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition-colors min-h-[44px] min-w-[44px] ${isLimitReached
                                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 : ''
                                 }`}
@@ -89,7 +89,7 @@ export default async function CategoriasPage() {
                                     <td className="px-4 py-3 sm:px-6 sm:py-4 text-right">
                                         <form action={deleteCategoryAction}>
                                             <input type="hidden" name="id" value={cat.id} />
-                                            <button type="submit" className="text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                                            <button type="submit" className="text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors min-h-[44px] min-w-[44px]">
                                                 Eliminar
                                             </button>
                                         </form>

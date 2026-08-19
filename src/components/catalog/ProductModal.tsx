@@ -51,7 +51,7 @@ export default function ProductModal({ product, plan, phoneNumber, onClose }: Pr
             onClick={onClose}
         >
             <div
-                className="relative flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-4xl bg-white shadow-2xl"
+                className="relative flex max-h-[90dvh] w-full max-w-xl flex-col overflow-hidden rounded-4xl bg-white shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button
@@ -84,7 +84,7 @@ export default function ProductModal({ product, plan, phoneNumber, onClose }: Pr
                     </p>
                 </div>
 
-                <div className="flex flex-col gap-3 border-t border-gray-100 bg-white p-6 sm:flex-row">
+                <div className="flex flex-col gap-3 border-t border-gray-100 bg-white p-6 pb-[max(1.5rem,env(safe-area-inset-bottom,1rem))] sm:flex-row">
                     <a
                         href={whatsappHref}
                         target="_blank"
