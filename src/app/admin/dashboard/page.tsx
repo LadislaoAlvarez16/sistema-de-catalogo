@@ -179,7 +179,11 @@ export default async function DashboardPage(props: { searchParams?: Promise<{ [k
             )}
           </div>
 
-          <div className="bg-white p-4 md:p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+          <Link
+            href="/admin/dashboard/categorias"
+            aria-label="Gestionar categorías"
+            className="bg-white p-4 md:p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between cursor-pointer block transition duration-150 ease-in-out hover:border-neutral-400 hover:shadow-sm active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2"
+          >
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Categorías</h3>
             <div className="flex justify-between items-end">
               <span className="text-3xl font-extrabold text-gray-900">{categoryCount}</span>
@@ -190,7 +194,7 @@ export default async function DashboardPage(props: { searchParams?: Promise<{ [k
             <div className="w-full bg-gray-100 rounded-full h-2.5 mt-4">
               <div className={`${categoryBarColor} h-2.5 rounded-full transition-all`} style={{ width: `${categoryPercentage}%` }}></div>
             </div>
-          </div>
+          </Link>
         </div>
 
         {fetchError ? (

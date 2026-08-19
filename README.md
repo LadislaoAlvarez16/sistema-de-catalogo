@@ -67,7 +67,7 @@ Los negocios pequeños comparten sus productos por PDF o imágenes de WhatsApp: 
 | Filtros avanzados por precio | ❌ | ✅ |
 | Dominio propio (.com.ar / .com) | ❌ | ✅ |
 | Sin branding de TiendaBase | ❌ | ✅ |
-| **Precio** | **$0** | **ARS $17.000/mes** |
+| **Precio** | **$0** | **ARS $20.000/mes** |
 
 ---
 
