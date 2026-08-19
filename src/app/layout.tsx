@@ -20,6 +20,13 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "Panel",
   },
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    apple: '/icon.png',
+  },
 };
 
 export const viewport: Viewport = {
