@@ -51,15 +51,16 @@ export async function updateProductAction(productId: string, prevState: unknown,
         let image_url = currentImageUrl
 
         if (image && image.size > 0) {
-            if (
-                currentImageUrl &&
-                typeof currentImageUrl === 'string' &&
-                currentImageUrl.includes('rvmxxlwnrlbbfihhblmy.supabase.co/storage/v1/object/public/product-images/')
-            ) {
-                const parts = currentImageUrl.split('/')
-                const oldFileName = parts[parts.length - 1]
-                if (oldFileName) {
-                    await supabase.storage.from('product-images').remove([oldFileName])
+            if (currentImageUrl && typeof currentImageUrl === 'string') {
+                try {
+                    const url = new URL(currentImageUrl)
+                    const parts = url.pathname.split('/')
+                    const oldFileName = parts[parts.length - 1]
+                    if (oldFileName) {
+                        await supabase.storage.from('product-images').remove([oldFileName])
+                    }
+                } catch (e: unknown) {
+                    console.error('Error parseando imagen antigua a eliminar:', e)
                 }
             }
 

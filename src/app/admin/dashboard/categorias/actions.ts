@@ -10,12 +10,13 @@ export async function addCategoryAction(formData: FormData) {
 
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error("No autorizado")
 
-    // Buscamos la cuenta Y su plan actual
+    // Buscamos la cuenta Y su plan actual y slug
     const { data: account } = await supabase
         .from('accounts')
-        .select('id, plan')
-        .eq('user_id', user?.id)
+        .select('id, plan, slug')
+        .eq('user_id', user.id)
         .single()
 
     if (!account) throw new Error("Cuenta no encontrada")
@@ -48,14 +49,27 @@ export async function addCategoryAction(formData: FormData) {
     // Actualizamos las vistas
     revalidatePath('/admin/dashboard/categorias')
     revalidatePath('/admin/dashboard/nuevo')
+    revalidatePath(`/${account.slug}`, 'page')
 }
 
 export async function deleteCategoryAction(formData: FormData) {
     const id = formData.get('id') as string
     const supabase = await createClient()
 
-    await supabase.from('categories').delete().eq('id', id)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error("No autorizado")
+
+    const { data: account } = await supabase
+        .from('accounts')
+        .select('id, slug')
+        .eq('user_id', user.id)
+        .single()
+
+    if (!account) throw new Error("Cuenta no encontrada")
+
+    await supabase.from('categories').delete().eq('id', id).eq('account_id', account.id)
 
     revalidatePath('/admin/dashboard/categorias')
     revalidatePath('/admin/dashboard/nuevo')
+    revalidatePath(`/${account.slug}`, 'page')
 }
