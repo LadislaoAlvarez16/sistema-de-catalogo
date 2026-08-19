@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { generateUniqueSlug } from '@/utils/slug'
 
-export async function updateProductAction(productId: string, formData: FormData) {
+export async function updateProductAction(productId: string, prevState: unknown, formData: FormData) {
     const name = formData.get('name') as string
     const category_id = formData.get('category_id') as string // <-- NUEVO
     const category_name = formData.get('category_name') as string // <-- NUEVO
@@ -15,13 +15,13 @@ export async function updateProductAction(productId: string, formData: FormData)
     const currentImageUrl = formData.get('current_image_url') as string | null
 
     if (!name || !category_id || isNaN(price)) {
-        throw new Error('Faltan campos obligatorios')
+        return { error: 'Faltan campos obligatorios', success: false }
     }
 
     const supabase = await createClient()
 
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('No autorizado')
+    if (!user) return { error: 'No autorizado', success: false }
 
     const { data: accountData, error: accountError } = await supabase
         .from('accounts')
@@ -29,55 +29,79 @@ export async function updateProductAction(productId: string, formData: FormData)
         .eq('user_id', user.id)
         .single()
 
-    if (accountError || !accountData) throw new Error('No se encontró la cuenta del negocio')
+    if (accountError || !accountData) return { error: 'No se encontró la cuenta del negocio', success: false }
     const accountId = accountData.id
 
     const slug = await generateUniqueSlug(supabase, name, accountId, productId)
 
-    let image_url = currentImageUrl
-
+    // --- Validación de imagen en el servidor ---
     if (image && image.size > 0) {
-        if (
-            currentImageUrl &&
-            typeof currentImageUrl === 'string' &&
-            currentImageUrl.includes('rvmxxlwnrlbbfihhblmy.supabase.co/storage/v1/object/public/product-images/')
-        ) {
-            const parts = currentImageUrl.split('/')
-            const oldFileName = parts[parts.length - 1]
-            if (oldFileName) {
-                await supabase.storage.from('product-images').remove([oldFileName])
-            }
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!validTypes.includes(image.type)) {
+            return { error: 'La imagen debe ser formato JPEG, PNG o WEBP', success: false }
         }
 
-        const fileExt = image.name.split('.').pop()
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
-
-        const { error: uploadError } = await supabase.storage
-            .from('product-images')
-            .upload(fileName, image)
-
-        if (!uploadError) {
-            const { data } = supabase.storage.from('product-images').getPublicUrl(fileName)
-            image_url = data.publicUrl
+        const MAX_SIZE = 4.5 * 1024 * 1024;
+        if (image.size > MAX_SIZE) {
+            return { error: 'La imagen no debe superar los 4.5 MB', success: false }
         }
     }
 
-    const { error } = await supabase
-        .from('products')
-        .update({
-            name,
-            slug,
-            category_id, // <-- NUEVO
-            category: category_name, // <-- NUEVO (Mantiene compatibilidad con el catálogo público)
-            price,
-            description,
-            image_url
-        })
-        .eq('id', productId)
-        .eq('account_id', accountId)
+    try {
+        let image_url = currentImageUrl
 
-    if (error) throw new Error(error.message)
+        if (image && image.size > 0) {
+            if (
+                currentImageUrl &&
+                typeof currentImageUrl === 'string' &&
+                currentImageUrl.includes('rvmxxlwnrlbbfihhblmy.supabase.co/storage/v1/object/public/product-images/')
+            ) {
+                const parts = currentImageUrl.split('/')
+                const oldFileName = parts[parts.length - 1]
+                if (oldFileName) {
+                    await supabase.storage.from('product-images').remove([oldFileName])
+                }
+            }
+
+            const fileExt = image.name.split('.').pop()
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
+
+            const { error: uploadError } = await supabase.storage
+                .from('product-images')
+                .upload(fileName, image)
+
+            if (!uploadError) {
+                const { data } = supabase.storage.from('product-images').getPublicUrl(fileName)
+                image_url = data.publicUrl
+            } else {
+                return { error: 'No se pudo subir la nueva imagen', success: false }
+            }
+        }
+
+        const { error } = await supabase
+            .from('products')
+            .update({
+                name,
+                slug,
+                category_id,
+                category: category_name,
+                price,
+                description,
+                image_url
+            })
+            .eq('id', productId)
+            .eq('account_id', accountId)
+
+        if (error) return { error: error.message, success: false }
+        
+        revalidatePath('/admin/dashboard')
+        revalidatePath('/[account]', 'page')
+    } catch (e: unknown) {
+        console.error("Error inesperado en updateProductAction:", e)
+        return { error: 'Ocurrió un error inesperado al actualizar el producto', success: false }
+    }
 
     revalidatePath('/admin/dashboard')
+    revalidatePath('/[account]', 'page')
     redirect('/admin/dashboard')
 }

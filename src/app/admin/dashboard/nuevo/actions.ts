@@ -53,54 +53,72 @@ export async function createProductAction(prevState: unknown, formData: FormData
         return { error: `Límite alcanzado: El plan ${currentPlan === 'basic' ? 'Básico' : currentPlan} permite hasta ${limit} productos. Contactanos para ampliar.` }
     }
 
-    // --- Si pasa el control, recién ahí procesamos la imagen ---
-    let image_url = null
-
+    // --- Validación de imagen en el servidor ---
     if (image && image.size > 0) {
-        const fileExt = image.name.split('.').pop()
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
-
-        const { error: uploadError } = await supabase.storage
-            .from('product-images')
-            .upload(fileName, image)
-
-        if (uploadError) {
-            console.error("Error subiendo imagen:", uploadError)
-            return { error: 'No se pudo subir la imagen' }
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!validTypes.includes(image.type)) {
+            return { error: 'La imagen debe ser formato JPEG, PNG o WEBP', success: false }
         }
 
-        const { data: publicUrlData } = supabase.storage
-            .from('product-images')
-            .getPublicUrl(fileName)
-
-        image_url = publicUrlData.publicUrl
+        const MAX_SIZE = 4.5 * 1024 * 1024;
+        if (image.size > MAX_SIZE) {
+            return { error: 'La imagen no debe superar los 4.5 MB', success: false }
+        }
     }
 
-    const slug = await generateUniqueSlug(supabase, name, accountData.id)
+    try {
+        // --- Si pasa el control, recién ahí procesamos la imagen ---
+        let image_url = null
 
-    // Guardar en la tabla products
-    const { error: insertError } = await supabase
-        .from('products')
-        .insert({
-            name,
-            slug,
-            category_id: categoryIdToSave,
-            category: categoryNameToSave,
-            price,
-            description: description || null,
-            image_url,
-            account_id: accountData.id
-        })
+        if (image && image.size > 0) {
+            const fileExt = image.name.split('.').pop()
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
 
-    if (insertError) {
-        console.error("Error insertando producto:", insertError)
-        return { error: insertError.message }
+            const { error: uploadError } = await supabase.storage
+                .from('product-images')
+                .upload(fileName, image)
+
+            if (uploadError) {
+                console.error("Error subiendo imagen:", uploadError)
+                return { error: 'No se pudo subir la imagen', success: false }
+            }
+
+            const { data: publicUrlData } = supabase.storage
+                .from('product-images')
+                .getPublicUrl(fileName)
+
+            image_url = publicUrlData.publicUrl
+        }
+
+        const slug = await generateUniqueSlug(supabase, name, accountData.id)
+
+        // Guardar en la tabla products
+        const { error: insertError } = await supabase
+            .from('products')
+            .insert({
+                name,
+                slug,
+                category_id: categoryIdToSave,
+                category: categoryNameToSave,
+                price,
+                description: description || null,
+                image_url,
+                account_id: accountData.id
+            })
+
+        if (insertError) {
+            console.error("Error insertando producto:", insertError)
+            return { error: insertError.message, success: false }
+        }
+
+        revalidatePath('/admin/dashboard')
+        revalidatePath('/[account]', 'page')
+
+        return { error: '', success: true }
+    } catch (e: unknown) {
+        console.error("Error inesperado en createProductAction:", e)
+        return { error: 'Ocurrió un error inesperado al guardar el producto', success: false }
     }
-
-    revalidatePath('/admin/dashboard')
-    revalidatePath('/[account]', 'page')
-
-    return { error: '', success: true }
 }
 
 export async function createCategoryFastAction(name: string) {

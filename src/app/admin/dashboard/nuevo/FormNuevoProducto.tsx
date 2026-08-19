@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react'
 import { createCategoryFastAction } from './actions'
 import { Loader2 } from 'lucide-react'
 
+import { compressImage } from '@/lib/image-compression'
+
 interface Categoria {
     id: string;
     name: string;
@@ -23,6 +25,8 @@ export default function FormNuevoProducto({
 }) {
     const [fileName, setFileName] = useState<string | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [imageError, setImageError] = useState<string | null>(null);
+    const [isCompressing, setIsCompressing] = useState(false);
     
     // Limpieza de memoria (evitar memory leaks con URL.createObjectURL)
     useEffect(() => {
@@ -40,17 +44,55 @@ export default function FormNuevoProducto({
     const [newCategoryName, setNewCategoryName] = useState("");
     const [isSavingCategory, setIsSavingCategory] = useState(false);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         
+        setImageError(null);
+
         // Liberamos la URL anterior si el usuario selecciona otro archivo antes de enviar
         if (previewUrl) {
             URL.revokeObjectURL(previewUrl);
         }
 
         if (file) {
-            setFileName(file.name);
-            setPreviewUrl(URL.createObjectURL(file));
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+            if (!validTypes.includes(file.type) && !file.type.startsWith('image/')) {
+                setImageError("El archivo debe ser una imagen válida");
+                e.target.value = '';
+                setFileName(null);
+                setPreviewUrl(null);
+                return;
+            }
+
+            setIsCompressing(true);
+            try {
+                const compressedFile = await compressImage(file);
+                
+                // Actualizar el input con el archivo comprimido
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(compressedFile);
+                e.target.files = dataTransfer.files;
+
+                const MAX_SIZE = 4.5 * 1024 * 1024;
+                if (compressedFile.size > MAX_SIZE) {
+                    setImageError("La imagen no debe superar los 4.5 MB tras la compresión");
+                    e.target.value = '';
+                    setFileName(null);
+                    setPreviewUrl(null);
+                    return;
+                }
+
+                setFileName(compressedFile.name);
+                setPreviewUrl(URL.createObjectURL(compressedFile));
+            } catch (error) {
+                console.error("Error comprimiendo imagen", error);
+                setImageError("Hubo un error al optimizar la imagen");
+                e.target.value = '';
+                setFileName(null);
+                setPreviewUrl(null);
+            } finally {
+                setIsCompressing(false);
+            }
         } else {
             setFileName(null);
             setPreviewUrl(null);
@@ -149,16 +191,24 @@ export default function FormNuevoProducto({
                         )}
                     </label>
                     <input type="file" id="image" name="image" accept="image/*" className="hidden" onChange={handleFileChange} />
+                    {imageError && (
+                        <p className="mt-2 text-sm text-red-600 font-medium">{imageError}</p>
+                    )}
                 </div>
 
                 <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
-                    <Link href="/admin/dashboard" className={`bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-5 py-2.5 rounded-lg font-medium transition-colors ${isLoading ? 'pointer-events-none opacity-50' : ''}`}>Cancelar</Link>
+                    <Link href="/admin/dashboard" className={`bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-5 py-2.5 rounded-lg font-medium transition-colors ${isLoading || isCompressing ? 'pointer-events-none opacity-50' : ''}`}>Cancelar</Link>
                     <button 
                         type="submit" 
-                        disabled={isLoading}
-                        className={`bg-gray-900 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-colors flex items-center justify-center gap-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-800'}`}
+                        disabled={isLoading || !!imageError || isCompressing}
+                        className={`bg-gray-900 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-colors flex items-center justify-center gap-2 ${isLoading || imageError || isCompressing ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-800'}`}
                     >
-                        {isLoading ? (
+                        {isCompressing ? (
+                            <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Optimizando imagen...
+                            </>
+                        ) : isLoading ? (
                             <>
                                 <Loader2 className="w-4 h-4 animate-spin" />
                                 Procesando...
