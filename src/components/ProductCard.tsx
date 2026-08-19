@@ -14,15 +14,19 @@ type Props = {
 };
 
 export default function ProductCard({ product, plan, phoneNumber, onClick }: Props) {
-    const showPrice = canShowPrices(plan);
+    const hasValidPrice = product.price !== null && product.price > 0;
+    const showPrice = canShowPrices(plan) && hasValidPrice;
+    const formattedPrice = hasValidPrice ? new Intl.NumberFormat('es-AR').format(product.price as number) : "";
     const imageSrc = getProductImageUrl(product.image_url);
-    const formattedPrice = product.price !== null ? new Intl.NumberFormat('es-AR').format(product.price) : "";
-    const priceLabel = showPrice && product.price !== null ? `$${formattedPrice}` : "Consultar";
-
+    
     const cleanPhone = phoneNumber?.replace(/\D/g, "") ?? "";
-    const whatsappHref = cleanPhone
-        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hola, me interesa el producto ${product.name} que vi en el catálogo.`)}`
-        : "#";
+    
+    // Armado del mensaje de WhatsApp
+    let waText = `Hola, me interesa el producto "${product.name}" que vi en el catálogo.`;
+    if (showPrice) {
+        waText = `Hola, me interesa el producto "${product.name}" de $${formattedPrice} que vi en el catálogo.`;
+    }
+    const whatsappHref = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waText)}` : "#";
 
     return (
         <li
@@ -58,7 +62,9 @@ export default function ProductCard({ product, plan, phoneNumber, onClick }: Pro
                     </p>
 
                     <div className="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4">
-                        <span className="text-lg sm:text-xl font-bold text-gray-900 self-start">{priceLabel}</span>
+                        {showPrice && (
+                            <span className="text-lg sm:text-xl font-bold text-gray-900 self-start">${formattedPrice}</span>
+                        )}
 
                         <div className="flex w-full gap-2 justify-end">
                             {phoneNumber && (

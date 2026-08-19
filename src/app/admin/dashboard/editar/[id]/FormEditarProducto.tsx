@@ -14,7 +14,7 @@ interface Product {
     name: string;
     category_id?: string;
     category?: string;
-    price: number;
+    price: number | null;
     description?: string;
     image_url?: string;
 }
@@ -112,8 +112,8 @@ export default function FormEditarProducto({
             <input type="hidden" name="current_image_url" value={product.image_url || ''} />
 
             <div>
-                <label htmlFor="name" className="block text-sm font-semibold text-gray-800 mb-1">Nombre</label>
-                <input type="text" id="name" name="name" defaultValue={product.name} required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm" />
+                <label htmlFor="name" className="block text-sm font-semibold text-gray-800 mb-1">Nombre del producto</label>
+                <input type="text" id="name" name="name" defaultValue={product.name} placeholder="Ej: Producto de prueba" required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm" />
             </div>
 
             <div>
@@ -139,8 +139,8 @@ export default function FormEditarProducto({
             </div>
 
             <div>
-                <label htmlFor="price" className="block text-sm font-semibold text-gray-800 mb-1">Precio</label>
-                <input type="number" id="price" name="price" defaultValue={product.price} required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm" />
+                <label htmlFor="price" className="block text-sm font-semibold text-gray-800 mb-1">Precio del producto (Opcional)</label>
+                <input type="number" id="price" name="price" defaultValue={product.price ?? ''} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm" />
             </div>
 
             <div>

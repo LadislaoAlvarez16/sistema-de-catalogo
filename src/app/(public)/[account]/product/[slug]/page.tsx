@@ -99,10 +99,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
         notFound();
     }
 
-    // Mismalógica del mensaje dinámico 
-    const showPrice = canShowPrices(config.plan);
-    const wpMessage = showPrice && product.price
-        ? `Hola, me interesa el producto: *${product.name}* que está a *$${product.price}*. ¿Tienen stock?`
+    const hasValidPrice = product.price !== null && product.price > 0;
+    const showPrice = canShowPrices(config.plan) && hasValidPrice;
+    const formattedPrice = hasValidPrice ? new Intl.NumberFormat('es-AR').format(product.price as number) : "";
+
+    const wpMessage = showPrice
+        ? `Hola, me interesa el producto: *${product.name}* que está a *$${formattedPrice}*. ¿Tienen stock?`
         : `Hola, me interesa el producto: *${product.name}*. ¿Me podrían dar más información?`;
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
@@ -114,7 +116,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         "image": getProductImageUrl(product.image_url) || undefined,
         "offers": {
             "@type": "Offer",
-            "price": product.price,
+            "price": product.price || undefined,
             "priceCurrency": "ARS",
             "availability": "https://schema.org/InStock",
             "url": `${baseUrl}/${account}/product/${slug}`
@@ -152,9 +154,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                             {product.name}
                         </h1>
 
-                        {showPrice && product.price !== null && (
+                        {showPrice && (
                             <p className="mb-6 text-3xl font-bold text-gray-900">
-                                ${product.price}
+                                ${formattedPrice}
                             </p>
                         )}
 

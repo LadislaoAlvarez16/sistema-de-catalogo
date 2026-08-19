@@ -9,12 +9,13 @@ export async function updateProductAction(productId: string, prevState: unknown,
     const name = formData.get('name') as string
     const category_id = formData.get('category_id') as string // <-- NUEVO
     const category_name = formData.get('category_name') as string // <-- NUEVO
-    const price = parseFloat(formData.get('price') as string)
+    const priceRaw = formData.get('price') as string
+    const price = priceRaw && priceRaw.trim() !== "" ? parseFloat(priceRaw) : null
     const description = formData.get('description') as string | null
     const image = formData.get('image') as File | null
     const currentImageUrl = formData.get('current_image_url') as string | null
 
-    if (!name || !category_id || isNaN(price)) {
+    if (!name || !category_id) {
         return { error: 'Faltan campos obligatorios', success: false }
     }
 

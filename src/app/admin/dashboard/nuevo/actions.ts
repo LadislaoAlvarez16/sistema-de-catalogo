@@ -9,7 +9,8 @@ export async function createProductAction(prevState: unknown, formData: FormData
     const name = formData.get('name') as string
     const category_id = formData.get('category_id') as string | null
     const category_name = formData.get('category_name') as string | null
-    const price = parseFloat(formData.get('price') as string)
+    const priceRaw = formData.get('price') as string
+    const price = priceRaw && priceRaw.trim() !== "" ? parseFloat(priceRaw) : null
     const description = formData.get('description') as string | null
     const image = formData.get('image') as File | null
 
@@ -17,7 +18,7 @@ export async function createProductAction(prevState: unknown, formData: FormData
     const categoryIdToSave = category_id && category_id !== "" ? category_id : null
     const categoryNameToSave = category_name && category_name !== "" ? category_name : null
 
-    if (!name || isNaN(price)) {
+    if (!name) {
         return { error: 'Faltan campos obligatorios' }
     }
 
