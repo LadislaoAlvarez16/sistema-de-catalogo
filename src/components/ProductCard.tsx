@@ -67,7 +67,7 @@ export default function ProductCard({ product, plan, phoneNumber, onClick }: Pro
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="flex items-center justify-center rounded-lg bg-green-500 w-10 h-10 text-white transition-colors hover:bg-green-600"
+                                    className="flex items-center justify-center rounded-lg bg-green-500 w-11 h-11 text-white transition-all hover:bg-green-600 active:scale-95"
                                     title="Consultar por WhatsApp"
                                 >
                                     <MessageCircle className="h-5 w-5" />
@@ -79,7 +79,7 @@ export default function ProductCard({ product, plan, phoneNumber, onClick }: Pro
                                     e.stopPropagation();
                                     onClick?.();
                                 }}
-                                className="flex items-center justify-center rounded-lg bg-blue-600 w-10 h-10 text-white transition-colors hover:bg-blue-700"
+                                className="flex items-center justify-center rounded-lg bg-blue-600 w-11 h-11 text-white transition-all hover:bg-blue-700 active:scale-95"
                                 title="Ver detalles"
                             >
                                 <Eye className="h-5 w-5" />

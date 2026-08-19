@@ -131,7 +131,7 @@ export default function FormNuevoProducto({
 
                 <div>
                     <label htmlFor="name" className="block text-sm font-semibold text-gray-800 mb-1">Nombre</label>
-                    <input type="text" id="name" name="name" required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white" />
+                    <input type="text" id="name" name="name" required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm" />
                 </div>
 
                 <div>
@@ -151,7 +151,7 @@ export default function FormNuevoProducto({
                         name="category_id"
                         required
                         value={selectedCategoryId}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white"
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm"
                         onChange={(e) => {
                             setSelectedCategoryId(e.target.value);
                             const selectedText = e.target.options[e.target.selectedIndex].text;
@@ -169,12 +169,12 @@ export default function FormNuevoProducto({
 
                 <div>
                     <label htmlFor="price" className="block text-sm font-semibold text-gray-800 mb-1">Precio</label>
-                    <input type="number" id="price" name="price" required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white" />
+                    <input type="number" id="price" name="price" required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm" />
                 </div>
 
                 <div>
                     <label htmlFor="description" className="block text-sm font-semibold text-gray-800 mb-1">Descripción (Opcional)</label>
-                    <textarea id="description" name="description" rows={3} placeholder="Detalles..." className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white"></textarea>
+                    <textarea id="description" name="description" rows={3} placeholder="Detalles..." className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm"></textarea>
                 </div>
 
                 <div>
@@ -236,7 +236,7 @@ export default function FormNuevoProducto({
                                     handleCreateCategory();
                                 }
                             }}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white mb-6"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm mb-6"
                             autoFocus
                         />
                         <div className="flex justify-end gap-3">

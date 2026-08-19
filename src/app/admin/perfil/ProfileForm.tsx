@@ -46,7 +46,7 @@ export default function ProfileForm({ account }: Props) {
                     type="text"
                     defaultValue={account?.name || ""}
                     placeholder="Ej: Cerrajería Pepe"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base sm:text-sm placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
                     required
                 />
             </div>
@@ -63,7 +63,7 @@ export default function ProfileForm({ account }: Props) {
                         value={slug}
                         onChange={handleSlugChange}
                         placeholder="ej-cerrajeria-pepe"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base sm:text-sm placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
                         required
                     />
                     {slug && (
@@ -95,7 +95,7 @@ export default function ProfileForm({ account }: Props) {
                     defaultValue={account?.description || ""}
                     placeholder="Ej: Cerrajería 24hs. Copias en el acto."
                     rows={3}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all resize-none"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base sm:text-sm placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all resize-none"
                 />
             </div>
 
@@ -109,7 +109,7 @@ export default function ProfileForm({ account }: Props) {
                     type="text"
                     defaultValue={account?.whatsapp || ""}
                     placeholder="Ej: 5491112345678"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base sm:text-sm placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all"
                 />
                 <p className="text-xs text-gray-500 mt-1.5">
                     Ingresá el código de país y área sin el símbolo + ni espacios.

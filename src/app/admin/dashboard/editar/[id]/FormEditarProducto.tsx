@@ -113,7 +113,7 @@ export default function FormEditarProducto({
 
             <div>
                 <label htmlFor="name" className="block text-sm font-semibold text-gray-800 mb-1">Nombre</label>
-                <input type="text" id="name" name="name" defaultValue={product.name} required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white" />
+                <input type="text" id="name" name="name" defaultValue={product.name} required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm" />
             </div>
 
             <div>
@@ -123,7 +123,7 @@ export default function FormEditarProducto({
                     name="category_id"
                     defaultValue={product.category_id || ''}
                     required
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm"
                     onChange={(e) => {
                         const selectedText = e.target.options[e.target.selectedIndex].text;
                         const hiddenInput = document.getElementById('category_name') as HTMLInputElement;
@@ -140,12 +140,12 @@ export default function FormEditarProducto({
 
             <div>
                 <label htmlFor="price" className="block text-sm font-semibold text-gray-800 mb-1">Precio</label>
-                <input type="number" id="price" name="price" defaultValue={product.price} required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white" />
+                <input type="number" id="price" name="price" defaultValue={product.price} required className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm" />
             </div>
 
             <div>
                 <label htmlFor="description" className="block text-sm font-semibold text-gray-800 mb-1">Descripción</label>
-                <textarea id="description" name="description" rows={3} defaultValue={product.description || ''} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white"></textarea>
+                <textarea id="description" name="description" rows={3} defaultValue={product.description || ''} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-gray-900 bg-white text-base sm:text-sm"></textarea>
             </div>
 
             <div>

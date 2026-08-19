@@ -42,14 +42,14 @@ export default function DashboardMobileMenu() {
           <Link
             href="/admin/perfil"
             onClick={() => setIsOpen(false)}
-            className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
+            className="px-4 py-3 text-base min-h-[44px] flex items-center text-gray-700 hover:bg-gray-50 rounded-lg"
           >
             Perfil
           </Link>
           <Link
             href="/admin/dashboard/categorias"
             onClick={() => setIsOpen(false)}
-            className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
+            className="px-4 py-3 text-base min-h-[44px] flex items-center text-gray-700 hover:bg-gray-50 rounded-lg"
           >
             Categorías
           </Link>

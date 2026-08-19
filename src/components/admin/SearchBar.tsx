@@ -42,7 +42,7 @@ export default function SearchBar() {
                 <input
                     type="text"
                     id="search"
-                    className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-900 focus:border-gray-900 block w-full pl-10 p-2.5 transition-colors shadow-sm outline-none"
+                    className="bg-white border border-gray-300 text-gray-900 text-base sm:text-sm rounded-lg focus:ring-gray-900 focus:border-gray-900 block w-full pl-10 p-2.5 transition-colors shadow-sm outline-none"
                     placeholder="Buscar por nombre..."
                     value={searchTerm}
                     onChange={(e) => handleSearch(e.target.value)}
