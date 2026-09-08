@@ -20,13 +20,14 @@ type Props = {
     categories: Category[];
     phoneNumber?: string;
     accountData: { name: string; description: string | null };
+    children?: React.ReactNode;
 };
 
 type SortOption = "name-asc" | "name-desc" | "category" | "price-asc" | "price-desc";
 
 const PRODUCTS_PER_PAGE = 8;
 
-export default function ProductGrid({ products, plan, categories, phoneNumber, accountData }: Props) {
+export default function ProductGrid({ products, plan, categories, phoneNumber, accountData, children }: Props) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [searchQuery, setSearchQuery] = useState("");
@@ -154,6 +155,7 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
             </section>
 
             <main className="mx-auto w-full max-w-5xl px-4 pb-16">
+                {children}
                 <div className="mb-8 flex flex-col gap-4">
                     <nav className="flex gap-2 overflow-x-auto no-scrollbar snap-x py-2 px-1 touch-pan-x w-full">
                         <button

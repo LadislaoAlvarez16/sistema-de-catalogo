@@ -4,13 +4,14 @@ import type { Product } from "@/types/product";
 import ProductGrid from "@/components/catalog/ProductGrid";
 import Footer from "@/components/layout/Footer";
 import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
-import type { Plan } from "@/lib/plan/plan.config";
+import { PLAN_RULES, type Plan } from "@/lib/plan/plan.config";
 import { Metadata } from 'next';
 import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
 
 export const dynamic = 'force-dynamic'; // Esto le dice a Next que NO cachee esta página, y que la ejecute SIEMPRE en el servidor. Es importante para que los cambios en Supabase se reflejen al instante sin tener que esperar a la revalidación de la caché.
 type PageProps = {
     params: Promise<{ account: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 
@@ -77,8 +78,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
 }
 
-export default async function PublicPage({ params }: PageProps) {
+import AdvancedFilters from "@/components/catalog/AdvancedFilters";
+
+export default async function PublicPage({ params, searchParams }: PageProps) {
     const { account: accountSlug } = await params;
+    const resolvedSearchParams = await searchParams;
 
     const { data: accountData, error: accountError } = await getAccountDataBySlug(accountSlug);
 
@@ -100,8 +104,11 @@ export default async function PublicPage({ params }: PageProps) {
         notFound();
     }
 
+    const canUseAdvancedFilters = PLAN_RULES[config.plan as Plan]?.advancedFilters;
+
     const supabase = await createPublicClient();
-    const { data: products, error: prodError } = await supabase
+    
+    let productsQuery = supabase
         .from("products")
         .select(`
             id,
@@ -117,8 +124,21 @@ export default async function PublicPage({ params }: PageProps) {
         `)
         .eq("active", true)
         .eq("account_id", accountId)
-        .order("created_at", { ascending: false })
-        .returns<Product[]>();
+        .order("created_at", { ascending: false });
+
+    if (canUseAdvancedFilters) {
+        const minPrice = resolvedSearchParams.minPrice;
+        const maxPrice = resolvedSearchParams.maxPrice;
+        
+        if (typeof minPrice === 'string' && !isNaN(Number(minPrice))) {
+            productsQuery = productsQuery.gte("price", Number(minPrice));
+        }
+        if (typeof maxPrice === 'string' && !isNaN(Number(maxPrice))) {
+            productsQuery = productsQuery.lte("price", Number(maxPrice));
+        }
+    }
+
+    const { data: products, error: prodError } = await productsQuery.returns<Product[]>();
 
     const { data: categories, error: catError } = await supabase
         .from("categories")
@@ -151,7 +171,9 @@ export default async function PublicPage({ params }: PageProps) {
                 categories={categories || []}
                 phoneNumber={config.whatsapp || undefined}
                 accountData={accountData}
-            />
+            >
+                {canUseAdvancedFilters && <AdvancedFilters />}
+            </ProductGrid>
             <Footer
                 accountData={accountData}
                 phoneNumber={config.whatsapp || undefined}
