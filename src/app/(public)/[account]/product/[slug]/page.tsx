@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import InteractiveImageWithZoom from "@/components/ui/InteractiveImageWithZoom";
@@ -8,7 +8,7 @@ import { getCatalogConfig } from "@/lib/config/getCatalogConfig";
 import { getProductImageUrl } from "@/lib/storage/getProductImageUrl";
 import type { Product } from "@/types/product";
 import { createPublicClient } from "@/lib/supabase/server-public";
-import { canShowPrices } from "@/lib/plan/plan.helpers";
+import { canUseProductPage } from "@/lib/plan/plan.helpers";
 
 type ProductPageProps = {
     params: Promise<{ account: string; slug: string }>;
@@ -99,11 +99,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
         notFound();
     }
 
+    // Validación estricta de plan (Deuda Técnica BR-04)
+    if (!canUseProductPage(config.plan)) {
+        redirect(`/${account}`);
+    }
+
     const hasValidPrice = product.price !== null && product.price > 0;
-    const showPrice = canShowPrices(config.plan) && hasValidPrice;
     const formattedPrice = hasValidPrice ? new Intl.NumberFormat('es-AR').format(product.price as number) : "";
 
-    const wpMessage = showPrice
+    const wpMessage = hasValidPrice
         ? `Hola, me interesa el producto: *${product.name}* que está a *$${formattedPrice}*. ¿Tienen stock?`
         : `Hola, me interesa el producto: *${product.name}*. ¿Me podrían dar más información?`;
 
@@ -154,7 +158,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                             {product.name}
                         </h1>
 
-                        {showPrice && (
+                        {hasValidPrice && (
                             <p className="mb-6 text-3xl font-bold text-gray-900">
                                 ${formattedPrice}
                             </p>

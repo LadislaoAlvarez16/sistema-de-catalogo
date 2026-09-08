@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -21,6 +21,7 @@ export type Database = {
           name: string
           plan: string
           slug: string | null
+          custom_domain: string | null
           user_id: string | null
           whatsapp: string | null
         }
@@ -30,6 +31,7 @@ export type Database = {
           name: string
           plan: string
           slug?: string | null
+          custom_domain?: string | null
           user_id?: string | null
           whatsapp?: string | null
         }
@@ -39,6 +41,7 @@ export type Database = {
           name?: string
           plan?: string
           slug?: string | null
+          custom_domain?: string | null
           user_id?: string | null
           whatsapp?: string | null
         }
