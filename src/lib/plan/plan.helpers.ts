@@ -20,3 +20,7 @@ export function canUseProductModal(plan: Plan) {
 export function getProductLimit(plan: Plan) {
     return PLAN_RULES[plan].productLimit;
 }
+
+export function canUseCustomDomain(plan: Plan) {
+    return PLAN_RULES[plan].customDomain;
+}

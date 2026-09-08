@@ -2,6 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { canUseCustomDomain } from '@/lib/plan/plan.helpers'
+import type { Plan } from '@/lib/plan/plan.config'
 
 export async function updateAccountSettings(prevState: unknown, formData: FormData) {
     const supabase = await createClient()
@@ -13,7 +15,7 @@ export async function updateAccountSettings(prevState: unknown, formData: FormDa
 
     const { data: account } = await supabase
         .from('accounts')
-        .select('id')
+        .select('id, plan')
         .eq('user_id', user.id)
         .single()
         
@@ -25,21 +27,44 @@ export async function updateAccountSettings(prevState: unknown, formData: FormDa
     const slug = formData.get("slug") as string
     const description = formData.get("description") as string
     const whatsapp = formData.get("whatsapp") as string
+    let custom_domain = formData.get("custom_domain") as string | null
 
     // Limpieza final de slug en el backend por seguridad
     const cleanSlug = slug?.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-')
 
+    // Validar autorización de plan para custom_domain
+    if (custom_domain && !canUseCustomDomain(account.plan as Plan)) {
+        return { error: "Tu plan actual no permite configurar un dominio personalizado." }
+    }
+    
+    // Limpieza básica de dominio
+    if (custom_domain) {
+        custom_domain = custom_domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '')
+        if (custom_domain === "") {
+            custom_domain = null
+        }
+    }
+
+    // Preparar objeto de actualización
+    const updateData: any = { name, slug: cleanSlug, description, whatsapp }
+    if (canUseCustomDomain(account.plan as Plan)) {
+        updateData.custom_domain = custom_domain
+    }
+
     const { error } = await supabase
         .from('accounts')
-        .update({ name, slug: cleanSlug, description, whatsapp })
+        .update(updateData)
         .eq('id', account.id)
 
     if (error) {
         // Interceptamos el código 23505 (Unique Violation en Postgres)
         if (error.code === '23505') {
+             if (error.message.includes('custom_domain')) {
+                 return { error: "Ese dominio ya está siendo utilizado por otro comercio. Por favor, verificá la propiedad." }
+             }
             return { error: "Ese enlace de catálogo ya está siendo utilizado por otro comercio. Por favor, elegí uno distinto." }
         }
-        return { error: error.message }
+        return { error: "Ocurrió un error al guardar la configuración." }
     }
 
     revalidatePath('/admin/perfil')

@@ -12,6 +12,7 @@ export const PLAN_RULES = {
         advancedFilters: false,
         productLimit: Infinity,
         categoryLimit: Infinity,
+        customDomain: false,
     },
     pro: {
         showPrices: true,
@@ -24,5 +25,6 @@ export const PLAN_RULES = {
         advancedFilters: true,
         productLimit: Infinity,
         categoryLimit: Infinity,
+        customDomain: true,
     },
 } as const;
