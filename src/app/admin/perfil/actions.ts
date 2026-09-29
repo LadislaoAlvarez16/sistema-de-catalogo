@@ -38,10 +38,17 @@ export async function updateAccountSettings(prevState: unknown, formData: FormDa
     }
     
     // Limpieza básica de dominio
-    if (custom_domain) {
+    if (custom_domain !== null) {
         custom_domain = custom_domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '')
         if (custom_domain === "") {
             custom_domain = null
+        }
+    }
+
+    if (custom_domain !== null) {
+        const domainRegex = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/;
+        if (!domainRegex.test(custom_domain) || custom_domain.length > 253) {
+            return { error: "El formato del dominio no es válido." }
         }
     }
 
