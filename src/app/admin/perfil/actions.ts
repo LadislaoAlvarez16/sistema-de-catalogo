@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { canUseCustomDomain } from '@/lib/plan/plan.helpers'
 import type { Plan } from '@/lib/plan/plan.config'
+import type { TablesUpdate } from '@/lib/database.types'
 
 export async function updateAccountSettings(prevState: unknown, formData: FormData) {
     const supabase = await createClient()
@@ -53,7 +54,7 @@ export async function updateAccountSettings(prevState: unknown, formData: FormDa
     }
 
     // Preparar objeto de actualización
-    const updateData: any = { name, slug: cleanSlug, description, whatsapp }
+    const updateData: TablesUpdate<'accounts'> = { name, slug: cleanSlug, description, whatsapp }
     if (canUseCustomDomain(account.plan as Plan)) {
         updateData.custom_domain = custom_domain
     }

@@ -4,6 +4,7 @@ import { useActionState, useState } from "react"
 import { updateAccountSettings } from "./actions"
 import DownloadQRButton from './DownloadQRButton'
 import { canUseCustomDomain } from "@/lib/plan/plan.helpers"
+import type { Plan } from "@/lib/plan/plan.config"
 
 type Props = {
     account: {
@@ -128,8 +129,8 @@ export default function ProfileForm({ account }: Props) {
                     name="custom_domain"
                     type="text"
                     defaultValue={account?.custom_domain || ""}
-                    placeholder={canUseCustomDomain(account.plan as any) ? "Ej: midominio.com" : "Disponible solo en el plan Pro"}
-                    disabled={!canUseCustomDomain(account.plan as any)}
+                    placeholder={canUseCustomDomain(account.plan as Plan) ? "Ej: midominio.com" : "Disponible solo en el plan Pro"}
+                    disabled={!canUseCustomDomain(account.plan as Plan)}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-900 text-base sm:text-sm placeholder-gray-400 focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                 />
                 <p className="text-xs text-gray-500 mt-1.5">
