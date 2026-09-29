@@ -17,10 +17,13 @@ type PageProps = {
 
 async function getAccountDataBySlug(slug: string) {
     const supabase = await createPublicClient();
+    const isDomain = slug.includes('.');
+    const field = isDomain ? 'custom_domain' : 'slug';
+
     const { data, error } = await supabase
         .from("accounts")
         .select("id, name, description")
-        .eq("slug", slug)
+        .eq(field, slug)
         .maybeSingle<{ id: string; name: string; description: string | null }>();
 
     return { data, error };
@@ -107,7 +110,7 @@ export default async function PublicPage({ params, searchParams }: PageProps) {
     const canUseAdvancedFilters = PLAN_RULES[config.plan as Plan]?.advancedFilters;
 
     const supabase = await createPublicClient();
-    
+
     let productsQuery = supabase
         .from("products")
         .select(`
@@ -129,7 +132,7 @@ export default async function PublicPage({ params, searchParams }: PageProps) {
     if (canUseAdvancedFilters) {
         const minPrice = resolvedSearchParams.minPrice;
         const maxPrice = resolvedSearchParams.maxPrice;
-        
+
         if (typeof minPrice === 'string' && !isNaN(Number(minPrice))) {
             productsQuery = productsQuery.gte("price", Number(minPrice));
         }
@@ -151,12 +154,14 @@ export default async function PublicPage({ params, searchParams }: PageProps) {
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const isDomain = accountSlug.includes('.');
+    const canonicalUrl = isDomain ? `https://${accountSlug}` : `${baseUrl}/${accountSlug}`;
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": accountData.name,
         "telephone": config.whatsapp || undefined,
-        "url": `${baseUrl}/${accountSlug}`
+        "url": canonicalUrl
     };
 
     return (

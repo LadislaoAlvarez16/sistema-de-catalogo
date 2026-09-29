@@ -1,20 +1,22 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function AdvancedFilters() {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
+    const [prevSearchParams, setPrevSearchParams] = useState(searchParams);
     const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
     const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
 
-    useEffect(() => {
+    if (searchParams !== prevSearchParams) {
+        setPrevSearchParams(searchParams);
         setMinPrice(searchParams.get("minPrice") || "");
         setMaxPrice(searchParams.get("maxPrice") || "");
-    }, [searchParams]);
+    }
 
     const handleApplyFilters = () => {
         const params = new URLSearchParams(searchParams.toString());

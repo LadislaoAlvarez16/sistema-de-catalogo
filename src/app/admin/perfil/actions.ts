@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { canUseCustomDomain } from '@/lib/plan/plan.helpers'
 import type { Plan } from '@/lib/plan/plan.config'
+import type { TablesUpdate } from '@/lib/database.types'
 
 export async function updateAccountSettings(prevState: unknown, formData: FormData) {
     const supabase = await createClient()
@@ -38,15 +39,22 @@ export async function updateAccountSettings(prevState: unknown, formData: FormDa
     }
     
     // Limpieza básica de dominio
-    if (custom_domain) {
+    if (custom_domain !== null) {
         custom_domain = custom_domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '')
         if (custom_domain === "") {
             custom_domain = null
         }
     }
 
+    if (custom_domain !== null) {
+        const domainRegex = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/;
+        if (!domainRegex.test(custom_domain) || custom_domain.length > 253) {
+            return { error: "El formato del dominio no es válido." }
+        }
+    }
+
     // Preparar objeto de actualización
-    const updateData: any = { name, slug: cleanSlug, description, whatsapp }
+    const updateData: TablesUpdate<'accounts'> = { name, slug: cleanSlug, description, whatsapp }
     if (canUseCustomDomain(account.plan as Plan)) {
         updateData.custom_domain = custom_domain
     }

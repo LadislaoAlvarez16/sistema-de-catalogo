@@ -18,10 +18,13 @@ async function getActiveProductBySlug(accountSlug: string, productSlug: string):
     const supabase = await createPublicClient();
 
     //  Primero buscamos la cuenta para obtener su ID(si existe), que necesitamos para buscar el producto
+    const isDomain = accountSlug.includes('.');
+    const field = isDomain ? 'custom_domain' : 'slug';
+
     const { data: accountData, error: accountError } = await supabase
         .from("accounts")
         .select("id")
-        .eq("slug", accountSlug)
+        .eq(field, accountSlug)
         .maybeSingle<{ id: string }>();
 
     if (accountError || !accountData) return null;
@@ -112,6 +115,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
         : `Hola, me interesa el producto: *${product.name}*. ¿Me podrían dar más información?`;
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const isDomain = account.includes('.');
+    const canonicalUrl = isDomain ? `https://${account}/product/${slug}` : `${baseUrl}/${account}/product/${slug}`;
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "Product",
@@ -123,7 +128,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             "price": product.price || undefined,
             "priceCurrency": "ARS",
             "availability": "https://schema.org/InStock",
-            "url": `${baseUrl}/${account}/product/${slug}`
+            "url": canonicalUrl
         }
     };
 
