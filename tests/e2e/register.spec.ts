@@ -1,11 +1,35 @@
 import { test, expect } from '@playwright/test';
+import { createClient } from '@supabase/supabase-js';
+
+let uniqueSlug: string;
+
+test.afterEach(async () => {
+  if (!uniqueSlug) return;
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data: account } = await supabase
+    .from('accounts')
+    .select('user_id')
+    .eq('slug', uniqueSlug)
+    .maybeSingle();
+
+  await supabase.from('accounts').delete().eq('slug', uniqueSlug);
+
+  if (account?.user_id) {
+    await supabase.auth.admin.deleteUser(account.user_id);
+  }
+});
 
 test('Debe registrar una nueva tienda exitosamente', async ({ page }) => {
   // 1. Navegar a /admin/register
   await page.goto('/admin/register');
 
   // 2 y 3. Llenar inputs y usar slug dinámico
-  const uniqueSlug = `test-shop-${Date.now()}`;
+  uniqueSlug = `test-shop-${Date.now()}`;
 
   await page.fill('input[name="businessName"]', 'Mi Tienda E2E');
   await page.fill('input[name="slug"]', uniqueSlug);
