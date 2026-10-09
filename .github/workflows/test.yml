@@ -28,6 +28,18 @@ jobs:
       - name: Run Unit Tests
         run: npm run test:unit
 
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Run Type Check
+        run: npm run type-check
+
+      - name: Build Project
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: npm run build
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 

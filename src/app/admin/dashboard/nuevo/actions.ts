@@ -56,14 +56,17 @@ export async function createProductAction(prevState: unknown, formData: FormData
 
     // --- Validación de imagen en el servidor ---
     if (image && image.size > 0) {
-        const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        if (!validTypes.includes(image.type)) {
-            return { error: 'La imagen debe ser formato JPEG, PNG o WEBP', success: false }
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        const validExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+        const fileExt = image.name.split('.').pop()?.toLowerCase() || '';
+
+        if (!validTypes.includes(image.type) || !validExtensions.includes(fileExt)) {
+            return { error: 'La imagen debe ser formato JPG, JPEG, PNG o WEBP', success: false }
         }
 
-        const MAX_SIZE = 4.5 * 1024 * 1024;
+        const MAX_SIZE = 4 * 1024 * 1024;
         if (image.size > MAX_SIZE) {
-            return { error: 'La imagen no debe superar los 4.5 MB', success: false }
+            return { error: 'La imagen no debe superar los 4 MB', success: false }
         }
     }
 
@@ -73,7 +76,7 @@ export async function createProductAction(prevState: unknown, formData: FormData
 
         if (image && image.size > 0) {
             const fileExt = image.name.split('.').pop()
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
+            const fileName = `${accountData.id}/${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
 
             const { error: uploadError } = await supabase.storage
                 .from('product-images')

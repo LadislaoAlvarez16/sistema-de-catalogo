@@ -6,8 +6,10 @@ export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request)
 
   const { pathname } = request.nextUrl
-  const hostname = request.headers.get('host') || ''
-  const mainDomain = process.env.NODE_ENV === 'production' ? 'sistema-de-catalogo.vercel.app' : 'localhost:3000'
+  let hostname = request.headers.get('host') || ''
+  hostname = hostname.split(':')[0].toLowerCase().replace(/^www\./, '') // Quitar puerto, www. y normalizar
+  
+  const mainDomain = process.env.NODE_ENV === 'production' ? 'sistema-de-catalogo.vercel.app' : 'localhost'
 
   // 2. Proteger rutas de admin (Lógica de enrutamiento y seguridad)
   if (
@@ -30,7 +32,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // 3. Lógica de enrutamiento para dominios personalizados (Migrada del proxy)
-  if (!hostname.includes(mainDomain)) {
+  const isSystemDomain = hostname === mainDomain || hostname.endsWith('.vercel.app')
+  if (!isSystemDomain) {
     // Reescribimos la ruta internamente
     request.nextUrl.pathname = `/${hostname}${pathname}`
     const rewriteResponse = NextResponse.rewrite(request.nextUrl)

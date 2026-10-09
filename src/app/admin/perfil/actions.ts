@@ -38,9 +38,13 @@ export async function updateAccountSettings(prevState: unknown, formData: FormDa
         return { error: "Tu plan actual no permite configurar un dominio personalizado." }
     }
     
-    // Limpieza básica de dominio
+    // Limpieza avanzada de dominio
     if (custom_domain !== null) {
-        custom_domain = custom_domain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '')
+        custom_domain = custom_domain.trim().toLowerCase()
+            .replace(/^https?:\/\//, '') // Remueve http:// o https://
+            .replace(/^www\./, '') // Remueve www.
+            .replace(/\/.*$/, '') // Remueve trailing slash o subdirectorios
+
         if (custom_domain === "") {
             custom_domain = null
         }
@@ -68,7 +72,7 @@ export async function updateAccountSettings(prevState: unknown, formData: FormDa
         // Interceptamos el código 23505 (Unique Violation en Postgres)
         if (error.code === '23505') {
              if (error.message.includes('custom_domain')) {
-                 return { error: "Ese dominio ya está siendo utilizado por otro comercio. Por favor, verificá la propiedad." }
+                 return { error: "Ese dominio ya está en uso." }
              }
             return { error: "Ese enlace de catálogo ya está siendo utilizado por otro comercio. Por favor, elegí uno distinto." }
         }

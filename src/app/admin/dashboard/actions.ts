@@ -40,10 +40,9 @@ export async function deleteProductServerAction(productId: string) {
     if (product.image_url) {
         try {
             const url = new URL(product.image_url)
-            const pathParts = url.pathname.split('/')
-            const fileName = pathParts[pathParts.length - 1]
-            if (fileName) {
-                await supabase.storage.from('product-images').remove([fileName])
+            const imagePath = url.pathname.split('/product-images/')[1]
+            if (imagePath) {
+                await supabase.storage.from('product-images').remove([imagePath])
             }
         } catch (e: unknown) {
             console.error('Error al parsear URL de imagen:', e)

@@ -37,14 +37,17 @@ export async function updateProductAction(productId: string, prevState: unknown,
 
     // --- Validación de imagen en el servidor ---
     if (image && image.size > 0) {
-        const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        if (!validTypes.includes(image.type)) {
-            return { error: 'La imagen debe ser formato JPEG, PNG o WEBP', success: false }
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        const validExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+        const fileExt = image.name.split('.').pop()?.toLowerCase() || '';
+
+        if (!validTypes.includes(image.type) || !validExtensions.includes(fileExt)) {
+            return { error: 'La imagen debe ser formato JPG, JPEG, PNG o WEBP', success: false }
         }
 
-        const MAX_SIZE = 4.5 * 1024 * 1024;
+        const MAX_SIZE = 4 * 1024 * 1024;
         if (image.size > MAX_SIZE) {
-            return { error: 'La imagen no debe superar los 4.5 MB', success: false }
+            return { error: 'La imagen no debe superar los 4 MB', success: false }
         }
     }
 
@@ -55,10 +58,9 @@ export async function updateProductAction(productId: string, prevState: unknown,
             if (currentImageUrl && typeof currentImageUrl === 'string') {
                 try {
                     const url = new URL(currentImageUrl)
-                    const parts = url.pathname.split('/')
-                    const oldFileName = parts[parts.length - 1]
-                    if (oldFileName) {
-                        await supabase.storage.from('product-images').remove([oldFileName])
+                    const oldImagePath = url.pathname.split('/product-images/')[1]
+                    if (oldImagePath) {
+                        await supabase.storage.from('product-images').remove([oldImagePath])
                     }
                 } catch (e: unknown) {
                     console.error('Error parseando imagen antigua a eliminar:', e)
@@ -66,7 +68,7 @@ export async function updateProductAction(productId: string, prevState: unknown,
             }
 
             const fileExt = image.name.split('.').pop()
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
+            const fileName = `${accountId}/${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
 
             const { error: uploadError } = await supabase.storage
                 .from('product-images')

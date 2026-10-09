@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next'
-import { createPublicClient } from "@/lib/supabase/server-public"
+import { createClient } from '@supabase/supabase-js'
+
+export const revalidate = 3600 // Revalidar cada hora
 
 type Account = {
   id: string;
@@ -25,7 +27,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   try {
-    const supabase = await createPublicClient()
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
     
     // Obtenemos todas las cuentas para generar las rutas base de cada tenant
     const { data: accountsData, error: accountsError } = await supabase
