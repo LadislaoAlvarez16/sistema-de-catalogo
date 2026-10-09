@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "test:unit": "jest"
+    "test:unit": "jest --testPathIgnorePatterns=tests/security tests/e2e",
+    "test:security": "jest tests/security"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",

@@ -94,7 +94,7 @@ export default function ProductGrid({ products, plan, categories, phoneNumber, a
         setSelectedProduct(product);
     };
 
-    const isFiltering = searchQuery.trim() !== "" || selectedCategory !== "all";
+
     const resultCount = searchFiltered.length;
     const resultText = resultCount === 1 ? "1 producto encontrado" : `${resultCount} productos encontrados`;
 
